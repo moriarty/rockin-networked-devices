@@ -19,3 +19,10 @@ add_library(conveyor_belt_kf_d44 SHARED
 target_link_libraries(conveyor_belt_kf_d44
   modbus
 )
+
+add_executable(simple_function_test
+  apps/simple_function_test
+)
+target_link_libraries(simple_function_test
+  conveyor_belt_kf_d44
+)

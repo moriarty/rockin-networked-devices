@@ -25,10 +25,6 @@ enum Direction
 {
     FORWARD = 0, REVERSE = 1
 };
-enum RunMode
-{
-    STOP = 0, START = 1
-};
 
 class ConveyorBeltKfD44
 {

@@ -29,11 +29,11 @@ int main(int argc, char *argv[])
     belt->setVelocity(boost::units::quantity<boost::units::si::velocity>(7500 * boost::units::si::meter_per_second));
 
     std::cout << "Moving the belt in FORWARD direction for 5 seconds " << std::flush;
-    belt->start(FORWARD);
+    belt->start(ConveyorBeltKfD44::FORWARD);
     sleep_with_progress(5);
 
     std::cout << "Moving the belt in REVERSE direction for 5 seconds " << std::flush;
-    belt->start(REVERSE);
+    belt->start(ConveyorBeltKfD44::REVERSE);
     sleep_with_progress(5);
 
     std::cout << "Stopping the belt" << std::endl;

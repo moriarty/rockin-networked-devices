@@ -21,14 +21,15 @@
 
 using namespace boost::units;
 
-enum Direction
-{
-    FORWARD = 0, REVERSE = 1
-};
+
 
 class ConveyorBeltKfD44
 {
     public:
+        enum Direction
+        {
+            FORWARD = 0, REVERSE = 1
+        };
 
         ConveyorBeltKfD44();
         virtual ~ConveyorBeltKfD44();

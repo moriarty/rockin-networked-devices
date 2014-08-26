@@ -1,13 +1,8 @@
 Conveyor Belt Control
 =====================
 
-##Requirements for the Real Devices
+##Requirements
 
-    sudo apt-get install cmake libmodbus-dev 
-  
-
-##Requirements for the Mock-Up only
-
-    sudo apt-get install cmake 
+    sudo apt-get install build-essential cmake libmodbus-dev libboost-system-dev
 
 

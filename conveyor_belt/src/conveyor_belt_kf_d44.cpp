@@ -46,7 +46,17 @@ int ConveyorBeltKfD44::connect(const std::string device_name)
         return -3;
 
     if (!is_connected())
+    {
+        modbus_close(modbus_rtu_contex);
+
+        if (modbus_rtu_contex != NULL)
+        {
+            modbus_free(modbus_rtu_contex);
+            modbus_rtu_contex = NULL;
+        }
+
         return -4;
+    }
 
     setDefaultParameters();
 

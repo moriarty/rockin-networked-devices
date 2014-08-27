@@ -7,10 +7,8 @@
 
 #include "conveyor_belt_kf_d44.h"
 
-ConveyorBeltKfD44::ConveyorBeltKfD44()
+ConveyorBeltKfD44::ConveyorBeltKfD44() : modbus_rtu_contex(NULL)
 {
-    modbus_rtu_contex = NULL;
-
     //ToDO: read these parameters from a config file
     slave_id = 0x1F;
     baudrate = 9600;

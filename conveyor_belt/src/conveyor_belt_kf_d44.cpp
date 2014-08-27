@@ -85,14 +85,14 @@ bool ConveyorBeltKfD44::is_connected()
 
     // check if status register can be read
     uint16_t current_register_value[1];
-    if (modbus_read_registers(modbus_rtu_contex, 0x0001, 1, current_register_value) != 1)
+    if (modbus_read_registers(modbus_rtu_contex, 0x0001, 1, current_register_value) == 1)
     {
         usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
-        return false;
+        return true;
     }
     usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
 
-    return true;
+    return false;
 }
 
 int ConveyorBeltKfD44::start(Direction motor_direction)
@@ -122,7 +122,7 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
 bool ConveyorBeltKfD44::stop()
 {
     // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex, 0x0001, 0x00))
+    if (modbus_write_register(modbus_rtu_contex, 0x0001, 0x00) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return true;

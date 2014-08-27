@@ -21,8 +21,6 @@
 
 using namespace boost::units;
 
-
-
 class ConveyorBeltKfD44
 {
     public:
@@ -107,8 +105,6 @@ class ConveyorBeltKfD44
          * @return a frequency in Hz * 100 (e.g. 7000 = 70Hz)
          */
         unsigned int convertVelocityToFrequency(const quantity<si::velocity> velocity);
-
-
 
         modbus_t *modbus_rtu_contex;
 

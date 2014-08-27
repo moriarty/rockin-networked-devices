@@ -132,15 +132,21 @@ bool ConveyorBeltKfD44::stop()
     return false;
 }
 
-void ConveyorBeltKfD44::setVelocity(const quantity<si::velocity> desired_belt_velocity)
+bool ConveyorBeltKfD44::setVelocity(const quantity<si::velocity> desired_belt_velocity)
 {
     int velocity_as_frequency = 0;
 
     velocity_as_frequency = convertVelocityToFrequency(desired_belt_velocity);
 
     // write the frequency in to the respective register
-    modbus_write_register(modbus_rtu_contex, 0x0002, velocity_as_frequency);
+    if(modbus_write_register(modbus_rtu_contex, 0x0002, velocity_as_frequency) == 1)
+    {
+        usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+        return true;
+    }
     usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+
+    return false;
 }
 
 void ConveyorBeltKfD44::setModbusDebugMode(bool debug_mode_on)

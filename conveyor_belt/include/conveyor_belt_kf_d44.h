@@ -81,8 +81,10 @@ class ConveyorBeltKfD44
          * Set the velocity of the belt. The velocity can be changed in any state.
          *
          * @param desired_belt_velocity	desired belt velocity in meter per seconds (Minimum velocity = 0.01 m/sec, maximum velocity = 0.03 m/sec). ToDo
+         * @retval true the velocity was set successfully
+         * @retval false the velocity could not be set
          */
-        void setVelocity(const quantity<si::velocity> desired_belt_velocity);
+        bool setVelocity(const quantity<si::velocity> desired_belt_velocity);
 
         /**
          * Allows to enable and disable the Modbus debug messages.

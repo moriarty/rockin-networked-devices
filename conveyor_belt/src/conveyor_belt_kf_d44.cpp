@@ -7,7 +7,8 @@
 
 #include "conveyor_belt_kf_d44.h"
 
-ConveyorBeltKfD44::ConveyorBeltKfD44() : modbus_rtu_contex(NULL)
+ConveyorBeltKfD44::ConveyorBeltKfD44() :
+        modbus_rtu_contex(NULL)
 {
     //ToDO: read these parameters from a config file
     slave_id = 0x1F;
@@ -137,7 +138,7 @@ bool ConveyorBeltKfD44::setVelocity(const quantity<si::velocity> desired_belt_ve
     velocity_as_frequency = convertVelocityToFrequency(desired_belt_velocity);
 
     // write the frequency in to the respective register
-    if(modbus_write_register(modbus_rtu_contex, 0x0002, velocity_as_frequency) == 1)
+    if (modbus_write_register(modbus_rtu_contex, 0x0002, velocity_as_frequency) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return true;

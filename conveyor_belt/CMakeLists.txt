@@ -21,7 +21,7 @@ target_link_libraries(conveyor_belt_kf_d44
 )
 
 add_executable(simple_function_test
-  apps/simple_function_test
+  apps/simple_function_test.cpp
 )
 target_link_libraries(simple_function_test
   conveyor_belt_kf_d44

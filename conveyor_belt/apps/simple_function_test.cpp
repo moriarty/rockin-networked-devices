@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
     belt->start(ConveyorBeltKfD44::FORWARD);
     sleep_with_progress(5);
 
+    std::cout << "Set belt velocity to (30Hz) and continue moving for 5 seconds" << std::flush;
+    belt->setVelocity(boost::units::quantity<boost::units::si::velocity>(3000 * boost::units::si::meter_per_second));
+    sleep_with_progress(5);
+
     std::cout << "Moving the belt in REVERSE direction for 5 seconds " << std::flush;
     belt->start(ConveyorBeltKfD44::REVERSE);
     sleep_with_progress(5);

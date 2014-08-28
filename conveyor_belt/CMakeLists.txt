@@ -8,6 +8,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(Protobuf REQUIRED)
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
 
 # generate header and source for proto messages
 file(GLOB ProtoFiles "${PROJECT_SOURCE_DIR}/msgs/*.proto")
@@ -16,8 +18,11 @@ PROTOBUF_GENERATE_CPP(PROTO_MESSAGE_SOURCES PROTO_MESSAGE_HEADERS ${ProtoFiles})
 include_directories(
   build/        # header and sources of .proto messages are generated here
   include/
+  qt/
   ${Boost_INCLUDE_DIRS}
-) 
+  ${QT_INCLUDE_DIR} 
+)
+
 
 ### LIBRARIES #################################################################
 add_library(conveyor_belt_kf_d44 SHARED
@@ -51,6 +56,17 @@ add_executable(zmq_client_function_test
 )
 target_link_libraries(zmq_client_function_test
   zmq
+  ${PROTOBUF_LIBRARIES}
+)
+
+add_executable(zmq_gui_client
+  apps/zmq_gui_client.cpp
+  src/conveyor_belt_gui.cpp
+  ${PROTO_MESSAGE_SOURCES}
+)
+target_link_libraries(zmq_gui_client
+  zmq
+  ${QT_LIBRARIES}
   ${PROTOBUF_LIBRARIES}
 )
 

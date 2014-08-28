@@ -1,4 +1,6 @@
 # the overall SYMLINK name must not be longer than 15 characters. 
 # Otherwise you will receive the following error message when trying to connect to it: "The device string has been truncated"
 
-SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="conveyor", MODE="0666"
+# RUN will execute the ZMQ conveyor belt server application
+
+SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="conveyor", MODE="0666", RUN+="/home/pi/rockin-networked-devices/conveyor_belt/bin/zmq_server"

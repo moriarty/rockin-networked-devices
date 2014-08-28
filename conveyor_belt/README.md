@@ -3,6 +3,6 @@ Conveyor Belt Control
 
 ##Requirements
 
-    sudo apt-get install build-essential cmake libmodbus-dev libboost-system-dev
+    sudo apt-get install build-essential cmake libmodbus-dev libprotobuf-dev libboost-system-dev
 
 

@@ -19,6 +19,7 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 ) 
 
+### LIBRARIES #################################################################
 add_library(conveyor_belt_kf_d44 SHARED
   src/conveyor_belt_kf_d44.cpp
 )
@@ -35,6 +36,7 @@ target_link_libraries(conveyor_belt_server
   ${PROTOBUF_LIBRARIES} 
 )
 
+### EXECUTABLES #################################################################
 add_executable(zmq_server
   apps/zmq_server.cpp
 )

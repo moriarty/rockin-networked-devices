@@ -17,7 +17,7 @@ ConveyorBeltKfD44::ConveyorBeltKfD44() :
     stop_bits = 1;
     partiy = 'N';                   // no parity
 
-    default_belt_velocity = 7500 * si::meter_per_second;
+    default_frequency = 75 * si::hertz;
 }
 
 ConveyorBeltKfD44::~ConveyorBeltKfD44()
@@ -131,14 +131,12 @@ bool ConveyorBeltKfD44::stop()
     return false;
 }
 
-bool ConveyorBeltKfD44::setVelocity(const quantity<si::velocity> desired_belt_velocity)
+bool ConveyorBeltKfD44::setFrequency(const quantity<si::frequency> desired_frequency)
 {
-    int velocity_as_frequency = 0;
-
-    velocity_as_frequency = convertVelocityToFrequency(desired_belt_velocity);
+    int transformed_frequency = static_cast<int>((desired_frequency.value() * 100)) ;
 
     // write the frequency in to the respective register
-    if (modbus_write_register(modbus_rtu_contex, 0x0002, velocity_as_frequency) == 1)
+    if (modbus_write_register(modbus_rtu_contex, 0x0002, transformed_frequency) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return true;
@@ -159,13 +157,5 @@ void ConveyorBeltKfD44::setModbusDebugMode(bool debug_mode_on)
 void ConveyorBeltKfD44::setDefaultParameters()
 {
     stop();
-    setVelocity(default_belt_velocity);
-}
-
-unsigned int ConveyorBeltKfD44::convertVelocityToFrequency(const quantity<si::velocity> velocity)
-{
-    // ToDo: add the conversion from given velocity to the conveyor belts frequency here.
-    // it is only a dummy function right now
-
-    return velocity.value();
+    setFrequency(default_frequency);
 }

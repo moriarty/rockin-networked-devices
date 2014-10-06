@@ -26,14 +26,14 @@ int main(int argc, char *argv[])
     }
 
     std::cout << "Set maximum belt velocity (75Hz)" << std::endl;
-    belt->setVelocity(boost::units::quantity<boost::units::si::velocity>(7500 * boost::units::si::meter_per_second));
+    belt->setFrequency(boost::units::quantity<boost::units::si::frequency>(75 * boost::units::si::hertz));
 
     std::cout << "Moving the belt in FORWARD direction for 5 seconds " << std::flush;
     belt->start(ConveyorBeltKfD44::FORWARD);
     sleep_with_progress(5);
 
     std::cout << "Set belt velocity to (30Hz) and continue moving for 5 seconds" << std::flush;
-    belt->setVelocity(boost::units::quantity<boost::units::si::velocity>(3000 * boost::units::si::meter_per_second));
+    belt->setFrequency(boost::units::quantity<boost::units::si::frequency>(30 * boost::units::si::hertz));
     sleep_with_progress(5);
 
     std::cout << "Moving the belt in REVERSE direction for 5 seconds " << std::flush;

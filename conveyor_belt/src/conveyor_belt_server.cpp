@@ -35,28 +35,44 @@ void ConveyorBeltServer::provideService(const std::string ip_address, const unsi
 void ConveyorBeltServer::update()
 {
     zmq::message_t request;
-    ConveyorBeltMessage conveyor_msg = ConveyorBeltMessage();
+    ConveyorBeltCommandMessage conveyor_command_msg = ConveyorBeltCommandMessage();
+    ConveyorBeltStatusMessage conveyor_status_msg = ConveyorBeltStatusMessage();
 
     // Wait for next client request
     if (zmq_socket->recv(&request) == -1)
-        sendStatus(ConveyorBeltMessage::RECEIVE_FAILED);
+    {
+        sendErrorCode(ConveyorBeltStatusMessage::RECEIVE_FAILED);
+        return;
+    }
 
-    // parse conveyor belt msg. If it fails it was a different type of msg
-    if (!conveyor_msg.ParseFromArray(request.data(), request.size()))
-        sendStatus(ConveyorBeltMessage::WRONG_MESSAGE_TYPE);
+    // parse conveyor belt msgs. If it fails it was a different type of msg
+    if (!conveyor_command_msg.ParseFromArray(request.data(), request.size()))
+    {
+        sendErrorCode(ConveyorBeltStatusMessage::WRONG_MESSAGE_TYPE);
+        return;
+    }
 
-    setConveyorBeltParameters(conveyor_msg);
+    if (!conveyor_command_msg.has_mode())
+    {
+        setConveyorBeltParameters(conveyor_command_msg);
+        sendErrorCode(ConveyorBeltStatusMessage::OK);
+    }
+    else
+    {
+        sendStatus();
+    }
 
-    // Send success
-    sendStatus(ConveyorBeltMessage::SUCCESS);
 }
 
-void ConveyorBeltServer::sendStatus(ConveyorBeltMessage::StatusCode status)
+void ConveyorBeltServer::sendStatus()
 {
-    ConveyorBeltMessage status_msg = ConveyorBeltMessage();
+    ConveyorBeltStatusMessage status_msg = ConveyorBeltStatusMessage();
     std::string serialized_string;
 
-    status_msg.set_status_code(status);
+    status_msg.set_error_code(ConveyorBeltStatusMessage::OK);
+    status_msg.set_is_device_connected(conveyor_device->is_connected());
+    //status_msg.set_is_belt_moving(ToDo);
+
     status_msg.SerializeToString(&serialized_string);
 
     zmq::message_t *reply = new zmq::message_t(serialized_string.length());
@@ -66,19 +82,30 @@ void ConveyorBeltServer::sendStatus(ConveyorBeltMessage::StatusCode status)
     delete reply;
 }
 
-void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltMessage msg)
+void ConveyorBeltServer::sendErrorCode(ConveyorBeltStatusMessage::ErrorCode error_code)
 {
-    // execute actions based on which variables are set
-    if (msg.has_velocity())
-        conveyor_device->setVelocity(quantity<boost::units::si::velocity>(msg.velocity() * si::meter_per_second));
+    ConveyorBeltStatusMessage status_msg = ConveyorBeltStatusMessage();
+    std::string serialized_string;
 
+    status_msg.set_error_code(error_code);
+    status_msg.SerializeToString(&serialized_string);
+
+    zmq::message_t *reply = new zmq::message_t(serialized_string.length());
+    memcpy(reply->data(), serialized_string.c_str(), serialized_string.length());
+    zmq_socket->send(*reply);
+
+    delete reply;
+}
+
+void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommandMessage msg)
+{
     if (msg.has_mode())
     {
-        if (msg.mode() == ConveyorBeltMessage::START_FORWARD)
+        if (msg.mode() == ConveyorBeltCommandMessage::START_FORWARD)
             conveyor_device->start(ConveyorBeltKfD44::FORWARD);
-        else if (msg.mode() == ConveyorBeltMessage::START_REVERSE)
+        else if (msg.mode() == ConveyorBeltCommandMessage::START_REVERSE)
             conveyor_device->start(ConveyorBeltKfD44::REVERSE);
-        else if (msg.mode() == ConveyorBeltMessage::STOP)
+        else if (msg.mode() == ConveyorBeltCommandMessage::STOP)
             conveyor_device->stop();
     }
 }

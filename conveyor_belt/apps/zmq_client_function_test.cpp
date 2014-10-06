@@ -1,7 +1,9 @@
 #include <iostream>
 #include <zmq.hpp>
-#include <conveyor_belt.pb.h>
+#include <conveyor_belt_command.pb.h>
+#include <conveyor_belt_status.pb.h>
 #include <stdio.h>
+
 
 void sleep_with_progress(unsigned int seconds)
 {
@@ -13,7 +15,7 @@ void sleep_with_progress(unsigned int seconds)
     std::cout << std::endl;
 }
 
-int sendMessage(zmq::socket_t &socket, ConveyorBeltMessage msg)
+int sendMessage(zmq::socket_t &socket, ConveyorBeltCommandMessage msg)
 {
     std::string serialized_string;
     zmq::message_t request;
@@ -25,9 +27,10 @@ int sendMessage(zmq::socket_t &socket, ConveyorBeltMessage msg)
     socket.send(*query);
 
     // wait for reply
+    ConveyorBeltStatusMessage status_msg;
     socket.recv(&request);
-    msg.ParseFromArray(request.data(), request.size());
-    return msg.status_code();
+    status_msg.ParseFromArray(request.data(), request.size());
+    return status_msg.error_code();
 }
 
 
@@ -35,37 +38,26 @@ int main(int argc, char *argv[])
 {
     zmq::context_t context(1);
     zmq::socket_t socket(context, ZMQ_REQ);
-    ConveyorBeltMessage conveyor_msg;
+    ConveyorBeltCommandMessage conveyor_msg;
 
-    socket.connect("tcp://127.0.0.1:5555");
+    socket.connect("tcp://10.20.121.46:5555");
 
-
-    std::cout << "Set maximum belt velocity (75Hz)" << std::endl;
-    conveyor_msg = ConveyorBeltMessage();
-    conveyor_msg.set_velocity(7500);
-    sendMessage(socket, conveyor_msg);
 
     std::cout << "Moving the belt in FORWARD direction for 5 seconds " << std::flush;
-    conveyor_msg = ConveyorBeltMessage();
-    conveyor_msg.set_mode(ConveyorBeltMessage::START_FORWARD);
-    sendMessage(socket, conveyor_msg);
-    sleep_with_progress(5);
-
-    std::cout << "Set belt velocity to (30Hz) and continue moving for 5 seconds" << std::flush;
-    conveyor_msg = ConveyorBeltMessage();
-    conveyor_msg.set_velocity(3000);
+    conveyor_msg = ConveyorBeltCommandMessage();
+    conveyor_msg.set_mode(ConveyorBeltCommandMessage::START_FORWARD);
     sendMessage(socket, conveyor_msg);
     sleep_with_progress(5);
 
     std::cout << "Moving the belt in REVERSE direction for 5 seconds " << std::flush;
-    conveyor_msg = ConveyorBeltMessage();
-    conveyor_msg.set_mode(ConveyorBeltMessage::START_REVERSE);
+    conveyor_msg = ConveyorBeltCommandMessage();
+    conveyor_msg.set_mode(ConveyorBeltCommandMessage::START_REVERSE);
     sendMessage(socket, conveyor_msg);
     sleep_with_progress(5);
 
     std::cout << "Stopping the belt" << std::endl;
-    conveyor_msg = ConveyorBeltMessage();
-    conveyor_msg.set_mode(ConveyorBeltMessage::STOP);
+    conveyor_msg = ConveyorBeltCommandMessage();
+    conveyor_msg.set_mode(ConveyorBeltCommandMessage::STOP);
     sendMessage(socket, conveyor_msg);
 
     google::protobuf::ShutdownProtobufLibrary();

@@ -1,0 +1,11 @@
+message ConveyorBeltCommandMessage
+{
+	enum RunMode
+	{
+		STOP = 0;
+		START_FORWARD = 1;
+		START_REVERSE = 2;
+	}
+
+	optional RunMode mode = 1;
+}

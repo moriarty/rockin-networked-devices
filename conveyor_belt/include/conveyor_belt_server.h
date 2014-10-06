@@ -14,7 +14,8 @@
 #include <string>
 #include <zmq.hpp>
 
-#include <conveyor_belt.pb.h>
+#include <conveyor_belt_command.pb.h>
+#include <conveyor_belt_status.pb.h>
 
 using namespace boost::units;
 
@@ -40,18 +41,23 @@ class ConveyorBeltServer
     private:
 
         /**
+         * sends a status message as a reply of a request
+         */
+        void sendStatus();
+
+        /**
          * sets the StatusCode field of the message and send it as a reply
          *
          * @param status status code
          */
-        void sendStatus(ConveyorBeltMessage::StatusCode status);
+        void sendErrorCode(ConveyorBeltStatusMessage::ErrorCode error_code);
 
         /**
          * Reads the parameters from the message and sets the respective parameters for the conveyor belt device
          *
          * @param msg message with the parameters to be set
          */
-        void setConveyorBeltParameters(ConveyorBeltMessage msg);
+        void setConveyorBeltParameters(ConveyorBeltCommandMessage msg);
 
         zmq::context_t *zmq_context;
         zmq::socket_t *zmq_socket;

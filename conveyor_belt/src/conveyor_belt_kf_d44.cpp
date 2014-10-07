@@ -8,7 +8,7 @@
 #include "conveyor_belt_kf_d44.h"
 
 ConveyorBeltKfD44::ConveyorBeltKfD44() :
-        modbus_rtu_contex_(NULL)
+        modbus_rtu_contex_(NULL), run_state(STOPPED)
 {
     //ToDO: read these parameters from a config file
     slave_id_ = 0x1F;
@@ -111,6 +111,7 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
     if (modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong())) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+        run_state = STARTED;
         return 0;
     }
     usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
@@ -124,6 +125,7 @@ bool ConveyorBeltKfD44::stop()
     if (modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+        run_state = STOPPED;
         return true;
     }
     usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
@@ -158,4 +160,9 @@ void ConveyorBeltKfD44::setDefaultParameters()
 {
     stop();
     setFrequency(default_frequency_);
+}
+
+ConveyorBeltKfD44::RunMode ConveyorBeltKfD44::getRunState()
+{
+    return run_state;
 }

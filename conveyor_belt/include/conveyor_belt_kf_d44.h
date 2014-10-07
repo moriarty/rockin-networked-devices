@@ -29,6 +29,11 @@ class ConveyorBeltKfD44
             FORWARD = 0, REVERSE = 1
         };
 
+        enum RunMode
+        {
+            STOPPED = 0, STARTED = 1
+        };
+
         ConveyorBeltKfD44();
         virtual ~ConveyorBeltKfD44();
 
@@ -91,6 +96,9 @@ class ConveyorBeltKfD44
          */
         void setModbusDebugMode(const bool debug_mode_on);
 
+        // ToDO: docu
+        RunMode getRunState();
+
     private:
 
         /**
@@ -107,6 +115,8 @@ class ConveyorBeltKfD44
         int stop_bits_;
         char partiy_;
         quantity<si::frequency> default_frequency_;
+
+        RunMode run_state;
 };
 
 #endif /* CONVEYOR_BELT_KF_D44_H_ */

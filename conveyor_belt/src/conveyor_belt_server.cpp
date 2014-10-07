@@ -60,6 +60,11 @@ void ConveyorBeltServer::sendStatusMessage()
 
     status_msg.set_is_device_connected(conveyor_device_->is_connected());
 
+    if(conveyor_device_->getRunState() == ConveyorBeltKfD44::STARTED)
+        status_msg.set_mode(START);
+    else
+        status_msg.set_mode(STOP);
+
     status_msg.SerializeToString(&serialized_string);
 
     zmq::message_t *reply = new zmq::message_t(serialized_string.length());
@@ -73,11 +78,9 @@ void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommandMessage ms
 {
     if (msg.has_mode())
     {
-        if (msg.mode() == ConveyorBeltCommandMessage::START_FORWARD)
+        if (msg.mode() == START)
             conveyor_device_->start(ConveyorBeltKfD44::FORWARD);
-        else if (msg.mode() == ConveyorBeltCommandMessage::START_REVERSE)
-            conveyor_device_->start(ConveyorBeltKfD44::REVERSE);
-        else if (msg.mode() == ConveyorBeltCommandMessage::STOP)
+        else if (msg.mode() == STOP)
             conveyor_device_->stop();
     }
 }

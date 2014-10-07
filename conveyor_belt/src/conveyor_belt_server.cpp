@@ -7,29 +7,29 @@
 
 #include <conveyor_belt_server.h>
 
-ConveyorBeltServer::ConveyorBeltServer() : zmq_context(NULL), zmq_socket(NULL)
+ConveyorBeltServer::ConveyorBeltServer() : zmq_context_(NULL), zmq_socket_(NULL)
 {
-    conveyor_device = new ConveyorBeltKfD44();
+    conveyor_device_ = new ConveyorBeltKfD44();
 
-    while (conveyor_device->connect("/dev/conveyor") != 0)
+    while (conveyor_device_->connect("/dev/conveyor") != 0)
         sleep(1);
 }
 
 ConveyorBeltServer::~ConveyorBeltServer()
 {
-    if (zmq_context != NULL)
-        delete zmq_context;
+    if (zmq_context_ != NULL)
+        delete zmq_context_;
 
-    if (zmq_socket != NULL)
-        delete zmq_socket;
+    if (zmq_socket_ != NULL)
+        delete zmq_socket_;
 }
 
 void ConveyorBeltServer::provideService(const std::string ip_address, const unsigned int port)
 {
-    zmq_context = new zmq::context_t(1);
-    zmq_socket = new zmq::socket_t(*zmq_context, ZMQ_REP);
+    zmq_context_ = new zmq::context_t(1);
+    zmq_socket_ = new zmq::socket_t(*zmq_context_, ZMQ_REP);
 
-    zmq_socket->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(port)).c_str());
+    zmq_socket_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(port)).c_str());
 }
 
 void ConveyorBeltServer::update()
@@ -39,7 +39,7 @@ void ConveyorBeltServer::update()
     ConveyorBeltStatusMessage conveyor_status_msg = ConveyorBeltStatusMessage();
 
     // Wait for next client request
-    if (zmq_socket->recv(&request) == -1)
+    if (zmq_socket_->recv(&request) == -1)
     {
         sendErrorCode(ConveyorBeltStatusMessage::RECEIVE_FAILED);
         return;
@@ -70,14 +70,14 @@ void ConveyorBeltServer::sendStatus()
     std::string serialized_string;
 
     status_msg.set_error_code(ConveyorBeltStatusMessage::OK);
-    status_msg.set_is_device_connected(conveyor_device->is_connected());
+    status_msg.set_is_device_connected(conveyor_device_->is_connected());
     //status_msg.set_is_belt_moving(ToDo);
 
     status_msg.SerializeToString(&serialized_string);
 
     zmq::message_t *reply = new zmq::message_t(serialized_string.length());
     memcpy(reply->data(), serialized_string.c_str(), serialized_string.length());
-    zmq_socket->send(*reply);
+    zmq_socket_->send(*reply);
 
     delete reply;
 }
@@ -92,7 +92,7 @@ void ConveyorBeltServer::sendErrorCode(ConveyorBeltStatusMessage::ErrorCode erro
 
     zmq::message_t *reply = new zmq::message_t(serialized_string.length());
     memcpy(reply->data(), serialized_string.c_str(), serialized_string.length());
-    zmq_socket->send(*reply);
+    zmq_socket_->send(*reply);
 
     delete reply;
 }
@@ -102,10 +102,10 @@ void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommandMessage ms
     if (msg.has_mode())
     {
         if (msg.mode() == ConveyorBeltCommandMessage::START_FORWARD)
-            conveyor_device->start(ConveyorBeltKfD44::FORWARD);
+            conveyor_device_->start(ConveyorBeltKfD44::FORWARD);
         else if (msg.mode() == ConveyorBeltCommandMessage::START_REVERSE)
-            conveyor_device->start(ConveyorBeltKfD44::REVERSE);
+            conveyor_device_->start(ConveyorBeltKfD44::REVERSE);
         else if (msg.mode() == ConveyorBeltCommandMessage::STOP)
-            conveyor_device->stop();
+            conveyor_device_->stop();
     }
 }

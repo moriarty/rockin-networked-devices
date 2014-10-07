@@ -8,16 +8,16 @@
 #include "conveyor_belt_kf_d44.h"
 
 ConveyorBeltKfD44::ConveyorBeltKfD44() :
-        modbus_rtu_contex(NULL)
+        modbus_rtu_contex_(NULL)
 {
     //ToDO: read these parameters from a config file
-    slave_id = 0x1F;
-    baudrate = 9600;
-    data_bits = 8;
-    stop_bits = 1;
-    partiy = 'N';                   // no parity
+    slave_id_ = 0x1F;
+    baudrate_ = 9600;
+    data_bits_ = 8;
+    stop_bits_ = 1;
+    partiy_ = 'N';                   // no parity
 
-    default_frequency = 75 * si::hertz;
+    default_frequency_ = 75 * si::hertz;
 }
 
 ConveyorBeltKfD44::~ConveyorBeltKfD44()
@@ -31,27 +31,27 @@ int ConveyorBeltKfD44::connect(const std::string device_name)
     disconnect();
 
     // configure the serial connection
-    modbus_rtu_contex = modbus_new_rtu(device_name.c_str(), baudrate, partiy, data_bits, stop_bits);
+    modbus_rtu_contex_ = modbus_new_rtu(device_name.c_str(), baudrate_, partiy_, data_bits_, stop_bits_);
 
-    if (modbus_rtu_contex == NULL)
+    if (modbus_rtu_contex_ == NULL)
         return -1;
 
     // set slave id to connect to
-    if (modbus_set_slave(modbus_rtu_contex, slave_id) != 0)
+    if (modbus_set_slave(modbus_rtu_contex_, slave_id_) != 0)
         return -2;
 
     // connect to slave device
-    if (modbus_connect(modbus_rtu_contex) != 0)
+    if (modbus_connect(modbus_rtu_contex_) != 0)
         return -3;
 
     if (!is_connected())
     {
-        modbus_close(modbus_rtu_contex);
+        modbus_close(modbus_rtu_contex_);
 
-        if (modbus_rtu_contex != NULL)
+        if (modbus_rtu_contex_ != NULL)
         {
-            modbus_free(modbus_rtu_contex);
-            modbus_rtu_contex = NULL;
+            modbus_free(modbus_rtu_contex_);
+            modbus_rtu_contex_ = NULL;
         }
 
         return -4;
@@ -67,24 +67,24 @@ void ConveyorBeltKfD44::disconnect()
     if (is_connected())
     {
         stop();
-        modbus_close(modbus_rtu_contex);
+        modbus_close(modbus_rtu_contex_);
     }
 
-    if (modbus_rtu_contex != NULL)
+    if (modbus_rtu_contex_ != NULL)
     {
-        modbus_free(modbus_rtu_contex);
-        modbus_rtu_contex = NULL;
+        modbus_free(modbus_rtu_contex_);
+        modbus_rtu_contex_ = NULL;
     }
 }
 
 bool ConveyorBeltKfD44::is_connected()
 {
-    if (modbus_rtu_contex == NULL)
+    if (modbus_rtu_contex_ == NULL)
         return false;
 
     // check if status register can be read
     uint16_t current_register_value[1];
-    if (modbus_read_registers(modbus_rtu_contex, 0x0001, 1, current_register_value) == 1)
+    if (modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, current_register_value) == 1)
     {
         usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
         return true;
@@ -108,7 +108,7 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
     register_value.set(0, true);
 
     // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex, 0x0001, (int) (register_value.to_ulong())) == 1)
+    if (modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong())) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return 0;
@@ -121,7 +121,7 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
 bool ConveyorBeltKfD44::stop()
 {
     // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex, 0x0001, 0x00) == 1)
+    if (modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return true;
@@ -136,7 +136,7 @@ bool ConveyorBeltKfD44::setFrequency(const quantity<si::frequency> desired_frequ
     int transformed_frequency = static_cast<int>((desired_frequency.value() * 100)) ;
 
     // write the frequency in to the respective register
-    if (modbus_write_register(modbus_rtu_contex, 0x0002, transformed_frequency) == 1)
+    if (modbus_write_register(modbus_rtu_contex_, 0x0002, transformed_frequency) == 1)
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return true;
@@ -151,11 +151,11 @@ void ConveyorBeltKfD44::setModbusDebugMode(bool debug_mode_on)
     if (!is_connected())
         return;
 
-    modbus_set_debug(modbus_rtu_contex, debug_mode_on);
+    modbus_set_debug(modbus_rtu_contex_, debug_mode_on);
 }
 
 void ConveyorBeltKfD44::setDefaultParameters()
 {
     stop();
-    setFrequency(default_frequency);
+    setFrequency(default_frequency_);
 }

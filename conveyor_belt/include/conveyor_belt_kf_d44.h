@@ -98,15 +98,15 @@ class ConveyorBeltKfD44
          */
         void setDefaultParameters();
 
-        modbus_t *modbus_rtu_contex;
+        modbus_t *modbus_rtu_contex_;
 
         //ToDO: read these parameter from a config file
-        int slave_id;
-        int baudrate;
-        int data_bits;
-        int stop_bits;
-        char partiy;
-        quantity<si::frequency> default_frequency;
+        int slave_id_;
+        int baudrate_;
+        int data_bits_;
+        int stop_bits_;
+        char partiy_;
+        quantity<si::frequency> default_frequency_;
 };
 
 #endif /* CONVEYOR_BELT_KF_D44_H_ */

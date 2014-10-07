@@ -59,10 +59,10 @@ class ConveyorBeltServer
          */
         void setConveyorBeltParameters(ConveyorBeltCommandMessage msg);
 
-        zmq::context_t *zmq_context;
-        zmq::socket_t *zmq_socket;
+        zmq::context_t *zmq_context_;
+        zmq::socket_t *zmq_socket_;
 
-        ConveyorBeltKfD44 *conveyor_device;
+        ConveyorBeltKfD44 *conveyor_device_;
 };
 
 #endif /* CONVEYOR_BELT_SERVER_H_ */

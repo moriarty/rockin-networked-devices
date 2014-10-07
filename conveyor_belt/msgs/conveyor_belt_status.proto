@@ -1,4 +1,0 @@
-message ConveyorBeltStatusMessage
-{
-	required bool is_device_connected = 1;
-}

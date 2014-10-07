@@ -59,7 +59,6 @@ void ConveyorBeltServer::sendStatusMessage()
     std::string serialized_string;
 
     status_msg.set_is_device_connected(conveyor_device_->is_connected());
-    std::cout << "is connected: " << status_msg.is_device_connected() << std::endl;
 
     status_msg.SerializeToString(&serialized_string);
 

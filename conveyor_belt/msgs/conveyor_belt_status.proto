@@ -1,13 +1,4 @@
 message ConveyorBeltStatusMessage
 {
-	enum ErrorCode
-	{
-		OK = 0;
-		WRONG_MESSAGE_TYPE = 1;
-		RECEIVE_FAILED = 2;
-	}
-
-	optional bool is_device_connected = 1;
-	optional bool is_belt_moving = 2;
-	required ErrorCode error_code = 3;
+	required bool is_device_connected = 1;
 }

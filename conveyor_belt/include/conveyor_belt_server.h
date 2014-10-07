@@ -10,7 +10,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <conveyor_belt_kf_d44.h>
-#include <iostream>     //ToDo: to be removed
+#include <iostream>
 #include <string>
 #include <zmq.hpp>
 
@@ -26,31 +26,25 @@ class ConveyorBeltServer
         virtual ~ConveyorBeltServer();
 
         /**
-         * provides a service (request/reply) on a ZMQ socket
+         * starts a ZMQ publisher (sending status messages) and subscriber (receiving command messages)
          *
          * @param ip_address ip address of the device on which the service is provided
-         * @param port port on which the service is provided
+         * @param command_msg_port port on which the server listens for incoming command messages
+         * @param status_msg_port port on which the server send status messages
          */
-        void provideService(const std::string ip_address, const unsigned int port);
+        void start(const std::string ip_address, const unsigned int command_msg_port, const unsigned int status_msg_port);
 
         /**
-         * checks and processes incoming requests and sends a reply afterwards
+         * checks and processes incoming data
          */
-        void update();
+        void receiveAndProcessData();
+
+        /**
+         * sends a status message
+         */
+        void sendStatusMessage();
 
     private:
-
-        /**
-         * sends a status message as a reply of a request
-         */
-        void sendStatus();
-
-        /**
-         * sets the StatusCode field of the message and send it as a reply
-         *
-         * @param status status code
-         */
-        void sendErrorCode(ConveyorBeltStatusMessage::ErrorCode error_code);
 
         /**
          * Reads the parameters from the message and sets the respective parameters for the conveyor belt device
@@ -60,7 +54,9 @@ class ConveyorBeltServer
         void setConveyorBeltParameters(ConveyorBeltCommandMessage msg);
 
         zmq::context_t *zmq_context_;
-        zmq::socket_t *zmq_socket_;
+
+        zmq::socket_t *zmq_publisher_;
+        zmq::socket_t *zmq_subscriber_;
 
         ConveyorBeltKfD44 *conveyor_device_;
 };

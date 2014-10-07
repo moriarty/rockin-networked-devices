@@ -7,7 +7,8 @@
 
 #include <conveyor_belt_server.h>
 
-ConveyorBeltServer::ConveyorBeltServer() : zmq_context_(NULL), zmq_socket_(NULL)
+ConveyorBeltServer::ConveyorBeltServer() :
+        zmq_context_(NULL), zmq_publisher_(NULL), zmq_subscriber_(NULL)
 {
     conveyor_device_ = new ConveyorBeltKfD44();
 
@@ -20,79 +21,51 @@ ConveyorBeltServer::~ConveyorBeltServer()
     if (zmq_context_ != NULL)
         delete zmq_context_;
 
-    if (zmq_socket_ != NULL)
-        delete zmq_socket_;
+    if (zmq_publisher_ != NULL)
+        delete zmq_publisher_;
+
+    if (zmq_subscriber_ != NULL)
+        delete zmq_subscriber_;
 }
 
-void ConveyorBeltServer::provideService(const std::string ip_address, const unsigned int port)
+void ConveyorBeltServer::start(const std::string ip_address, const unsigned int command_msg_port, const unsigned int status_msg_port)
 {
     zmq_context_ = new zmq::context_t(1);
-    zmq_socket_ = new zmq::socket_t(*zmq_context_, ZMQ_REP);
 
-    zmq_socket_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(port)).c_str());
+    // add publisher to send status messages
+    zmq_publisher_ = new zmq::socket_t(*zmq_context_, ZMQ_PUB);
+    zmq_publisher_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(status_msg_port)).c_str());
+
+    // add subscriber to receive command messages from a client
+    zmq_subscriber_ = new zmq::socket_t(*zmq_context_, ZMQ_SUB);
+    zmq_subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0);
+    zmq_subscriber_->connect(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(command_msg_port)).c_str());
 }
 
-void ConveyorBeltServer::update()
+void ConveyorBeltServer::receiveAndProcessData()
 {
-    zmq::message_t request;
+    zmq::message_t zmq_message;
     ConveyorBeltCommandMessage conveyor_command_msg = ConveyorBeltCommandMessage();
-    ConveyorBeltStatusMessage conveyor_status_msg = ConveyorBeltStatusMessage();
 
-    // Wait for next client request
-    if (zmq_socket_->recv(&request) == -1)
-    {
-        sendErrorCode(ConveyorBeltStatusMessage::RECEIVE_FAILED);
-        return;
-    }
-
-    // parse conveyor belt msgs. If it fails it was a different type of msg
-    if (!conveyor_command_msg.ParseFromArray(request.data(), request.size()))
-    {
-        sendErrorCode(ConveyorBeltStatusMessage::WRONG_MESSAGE_TYPE);
-        return;
-    }
-
-    if (!conveyor_command_msg.has_mode())
-    {
+    // check if a new a new message has arrived and if it is a conveyor belt command message
+    if (zmq_subscriber_->recv(&zmq_message, ZMQ_NOBLOCK) && conveyor_command_msg.ParseFromArray(zmq_message.data(), zmq_message.size()))
         setConveyorBeltParameters(conveyor_command_msg);
-        sendErrorCode(ConveyorBeltStatusMessage::OK);
-    }
-    else
-    {
-        sendStatus();
-    }
 
 }
 
-void ConveyorBeltServer::sendStatus()
+void ConveyorBeltServer::sendStatusMessage()
 {
     ConveyorBeltStatusMessage status_msg = ConveyorBeltStatusMessage();
     std::string serialized_string;
 
-    status_msg.set_error_code(ConveyorBeltStatusMessage::OK);
     status_msg.set_is_device_connected(conveyor_device_->is_connected());
-    //status_msg.set_is_belt_moving(ToDo);
+    std::cout << "is connected: " << status_msg.is_device_connected() << std::endl;
 
     status_msg.SerializeToString(&serialized_string);
 
     zmq::message_t *reply = new zmq::message_t(serialized_string.length());
     memcpy(reply->data(), serialized_string.c_str(), serialized_string.length());
-    zmq_socket_->send(*reply);
-
-    delete reply;
-}
-
-void ConveyorBeltServer::sendErrorCode(ConveyorBeltStatusMessage::ErrorCode error_code)
-{
-    ConveyorBeltStatusMessage status_msg = ConveyorBeltStatusMessage();
-    std::string serialized_string;
-
-    status_msg.set_error_code(error_code);
-    status_msg.SerializeToString(&serialized_string);
-
-    zmq::message_t *reply = new zmq::message_t(serialized_string.length());
-    memcpy(reply->data(), serialized_string.c_str(), serialized_string.length());
-    zmq_socket_->send(*reply);
+    zmq_publisher_->send(*reply);
 
     delete reply;
 }

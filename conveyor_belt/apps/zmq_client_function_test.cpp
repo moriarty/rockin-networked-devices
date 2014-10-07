@@ -15,50 +15,70 @@ void sleep_with_progress(unsigned int seconds)
     std::cout << std::endl;
 }
 
-int sendMessage(zmq::socket_t &socket, ConveyorBeltCommandMessage msg)
+void sendMessage(zmq::socket_t &publisher, ConveyorBeltCommandMessage msg)
 {
     std::string serialized_string;
-    zmq::message_t request;
 
     // send message
     msg.SerializeToString(&serialized_string);
     zmq::message_t *query = new zmq::message_t(serialized_string.length());
     memcpy(query->data(), serialized_string.c_str(), serialized_string.length());
-    socket.send(*query);
 
-    // wait for reply
+    publisher.send(*query);
+}
+
+void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)
+{
+    zmq::message_t zmq_message;
     ConveyorBeltStatusMessage status_msg;
-    socket.recv(&request);
-    status_msg.ParseFromArray(request.data(), request.size());
-    return status_msg.error_code();
+
+    if(subscriber.recv(&zmq_message, ZMQ_NOBLOCK))
+    {
+        status_msg.ParseFromArray(zmq_message.data(), zmq_message.size());
+        std::cout << "is the device connected: " << status_msg.is_device_connected() << std::endl;
+    }
 }
 
 
 int main(int argc, char *argv[])
 {
+    ConveyorBeltCommandMessage conveyor_command_msg;
+
     zmq::context_t context(1);
-    zmq::socket_t socket(context, ZMQ_REQ);
-    ConveyorBeltCommandMessage conveyor_msg;
 
-    socket.connect("tcp://10.20.121.46:5555");
+    zmq::socket_t publisher(context, ZMQ_PUB);
+    publisher.bind("tcp://127.0.0.1:55555");
 
+    // add subscriber to receive command messages from a client
+    zmq::socket_t subscriber(context, ZMQ_SUB);
+    subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+    subscriber.connect("tcp://127.0.0.1:55556");
+
+    // give the publisher/subscriber some time to get ready
+    sleep(1);
 
     std::cout << "Moving the belt in FORWARD direction for 5 seconds " << std::flush;
-    conveyor_msg = ConveyorBeltCommandMessage();
-    conveyor_msg.set_mode(ConveyorBeltCommandMessage::START_FORWARD);
-    sendMessage(socket, conveyor_msg);
+    conveyor_command_msg = ConveyorBeltCommandMessage();
+    conveyor_command_msg.set_mode(ConveyorBeltCommandMessage::START_FORWARD);
+    sendMessage(publisher, conveyor_command_msg);
     sleep_with_progress(5);
+
+    receiveAndPrintStatusMessage(subscriber);
 
     std::cout << "Moving the belt in REVERSE direction for 5 seconds " << std::flush;
-    conveyor_msg = ConveyorBeltCommandMessage();
-    conveyor_msg.set_mode(ConveyorBeltCommandMessage::START_REVERSE);
-    sendMessage(socket, conveyor_msg);
+    conveyor_command_msg = ConveyorBeltCommandMessage();
+    conveyor_command_msg.set_mode(ConveyorBeltCommandMessage::START_REVERSE);
+    sendMessage(publisher, conveyor_command_msg);
     sleep_with_progress(5);
 
+    receiveAndPrintStatusMessage(subscriber);
+
     std::cout << "Stopping the belt" << std::endl;
-    conveyor_msg = ConveyorBeltCommandMessage();
-    conveyor_msg.set_mode(ConveyorBeltCommandMessage::STOP);
-    sendMessage(socket, conveyor_msg);
+    conveyor_command_msg = ConveyorBeltCommandMessage();
+    conveyor_command_msg.set_mode(ConveyorBeltCommandMessage::STOP);
+    sendMessage(publisher, conveyor_command_msg);
+
+    receiveAndPrintStatusMessage(subscriber);
 
     google::protobuf::ShutdownProtobufLibrary();
 

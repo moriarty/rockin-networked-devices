@@ -43,6 +43,7 @@ add_executable(zmq_server
 target_link_libraries(zmq_server
   conveyor_belt_server
   zmq
+  ${Boost_LIBRARIES}
 )
 
 add_executable(zmq_client_function_test

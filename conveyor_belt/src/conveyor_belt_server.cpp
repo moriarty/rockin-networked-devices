@@ -76,10 +76,15 @@ void ConveyorBeltServer::sendStatusMessage()
 
 void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommandMessage msg)
 {
+    quantity<si::frequency> default_frequency = 75 * si::hertz;
+
     if (msg.has_mode())
     {
         if (msg.mode() == START)
+        {
+            conveyor_device_->setFrequency(default_frequency);
             conveyor_device_->start(ConveyorBeltKfD44::FORWARD);
+        }
         else if (msg.mode() == STOP)
             conveyor_device_->stop();
     }

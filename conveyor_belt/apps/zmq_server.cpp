@@ -9,7 +9,8 @@ int main(int argc, char *argv[])
 {
     ConveyorBeltServer *server = new ConveyorBeltServer();
 
-    server->start("127.0.0.1", 55555, 55556);
+    server->startSubscriber("ref-box", 55555);
+    server->startPublisher("eth0", 55556);
 
     time_duration time_diff;
     ptime prev_time_send = microsec_clock::local_time();

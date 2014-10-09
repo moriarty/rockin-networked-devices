@@ -25,13 +25,20 @@ class ConveyorBeltServer
         virtual ~ConveyorBeltServer();
 
         /**
-         * starts a ZMQ publisher (sending status messages) and subscriber (receiving command messages)
+         * starts a ZMQ publisher (sending status messages)
          *
-         * @param ip_address ip address of the device on which the service is provided
-         * @param command_msg_port port on which the server listens for incoming command messages
-         * @param status_msg_port port on which the server send status messages
+         * @param ip_address ip address or interface name of the device on which the service is provided
+         * @param status_msg_port port on which the server sends status messages
          */
-        void start(const std::string ip_address, const unsigned int command_msg_port, const unsigned int status_msg_port);
+        void startPublisher(const std::string ip_address, const unsigned int status_msg_port);
+
+        /**
+         * starts a ZMQ subscriber (receiving command messages)
+         *
+         * @param ip_address ip address of the device to subscribe to
+         * @param command_msg_port port port to connect to
+         */
+        void startSubscriber(const std::string ip_address, const unsigned int command_msg_port);
 
         /**
          * checks and processes incoming data

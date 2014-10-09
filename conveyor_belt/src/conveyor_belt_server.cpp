@@ -10,6 +10,7 @@
 ConveyorBeltServer::ConveyorBeltServer() :
         zmq_context_(NULL), zmq_publisher_(NULL), zmq_subscriber_(NULL)
 {
+    zmq_context_ = new zmq::context_t(1);
     conveyor_device_ = new ConveyorBeltKfD44();
 
     while (conveyor_device_->connect("/dev/conveyor") != 0)
@@ -28,14 +29,15 @@ ConveyorBeltServer::~ConveyorBeltServer()
         delete zmq_subscriber_;
 }
 
-void ConveyorBeltServer::start(const std::string ip_address, const unsigned int command_msg_port, const unsigned int status_msg_port)
+void ConveyorBeltServer::startPublisher(const std::string ip_address, const unsigned int status_msg_port)
 {
-    zmq_context_ = new zmq::context_t(1);
-
     // add publisher to send status messages
     zmq_publisher_ = new zmq::socket_t(*zmq_context_, ZMQ_PUB);
     zmq_publisher_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(status_msg_port)).c_str());
+}
 
+void ConveyorBeltServer::startSubscriber(const std::string ip_address, const unsigned int command_msg_port)
+{
     // add subscriber to receive command messages from a client
     zmq_subscriber_ = new zmq::socket_t(*zmq_context_, ZMQ_SUB);
     zmq_subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0);

@@ -14,7 +14,7 @@
 #include <string>
 #include <zmq.hpp>
 
-#include <conveyor_belt.pb.h>
+#include <ConveyorBelt.pb.h>
 
 using namespace boost::units;
 

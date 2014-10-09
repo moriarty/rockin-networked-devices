@@ -1,6 +1,6 @@
 #include <iostream>
 #include <zmq.hpp>
-#include <conveyor_belt.pb.h>
+#include <ConveyorBelt.pb.h>
 #include <stdio.h>
 
 void sleep_with_progress(unsigned int seconds)

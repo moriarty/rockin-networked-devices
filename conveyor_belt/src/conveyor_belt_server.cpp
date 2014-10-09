@@ -62,7 +62,7 @@ void ConveyorBeltServer::sendStatusMessage()
 
     status_msg.set_is_device_connected(conveyor_device_->is_connected());
 
-    if(conveyor_device_->getRunState() == ConveyorBeltKfD44::STARTED)
+    if (conveyor_device_->getRunState() == ConveyorBeltKfD44::STARTED)
         status_msg.set_mode(START);
     else
         status_msg.set_mode(STOP);
@@ -86,8 +86,7 @@ void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommandMessage ms
         {
             conveyor_device_->setFrequency(default_frequency);
             conveyor_device_->start(ConveyorBeltKfD44::FORWARD);
-        }
-        else if (msg.mode() == STOP)
+        } else if (msg.mode() == STOP)
             conveyor_device_->stop();
     }
 }

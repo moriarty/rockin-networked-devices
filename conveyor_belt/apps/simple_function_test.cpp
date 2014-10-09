@@ -3,7 +3,7 @@
 
 void sleep_with_progress(unsigned int seconds)
 {
-    for(size_t i = 0; i < seconds; ++i)
+    for (size_t i = 0; i < seconds; ++i)
     {
         std::cout << ". " << std::flush;
         sleep(1);

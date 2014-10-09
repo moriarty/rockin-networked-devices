@@ -3,10 +3,9 @@
 #include <conveyor_belt.pb.h>
 #include <stdio.h>
 
-
 void sleep_with_progress(unsigned int seconds)
 {
-    for(size_t i = 0; i < seconds; ++i)
+    for (size_t i = 0; i < seconds; ++i)
     {
         std::cout << ". " << std::flush;
         sleep(1);
@@ -31,14 +30,13 @@ void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)
     zmq::message_t zmq_message;
     ConveyorBeltStatusMessage status_msg;
 
-    if(subscriber.recv(&zmq_message, ZMQ_NOBLOCK))
+    if (subscriber.recv(&zmq_message, ZMQ_NOBLOCK))
     {
         status_msg.ParseFromArray(zmq_message.data(), zmq_message.size());
         std::cout << "is the device connected: " << status_msg.is_device_connected() << std::endl;
         std::cout << "mode: " << status_msg.mode() << std::endl;
     }
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -47,12 +45,12 @@ int main(int argc, char *argv[])
     zmq::context_t context(1);
 
     zmq::socket_t publisher(context, ZMQ_PUB);
-    publisher.bind("tcp://127.0.0.1:55555");
+    publisher.bind("tcp://eth0:55555");
 
     // add subscriber to receive command messages from a client
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    subscriber.connect("tcp://127.0.0.1:55556");
+    subscriber.connect("tcp://conveyor-belt:55556");
 
     // give the publisher/subscriber some time to get ready
     sleep(1);

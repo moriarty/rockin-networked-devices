@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     ptime prev_time_send = microsec_clock::local_time();
     io_service io_srv;
 
-    while(true)
+    while (true)
     {
         // the main loop runs every 20ms (i.e. check for incoming data)
         deadline_timer loop_timer(io_srv, milliseconds(20));
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
         // every 200ms a status message will be sent
         time_diff = microsec_clock::local_time() - prev_time_send;
-        if(time_diff.total_milliseconds() > 200)
+        if (time_diff.total_milliseconds() > 200)
         {
             server->sendStatusMessage();
             prev_time_send = microsec_clock::local_time();

@@ -6,7 +6,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost 1.46 REQUIRED COMPONENTS system)
 find_package(Protobuf REQUIRED)
 
 # generate header and source for proto messages

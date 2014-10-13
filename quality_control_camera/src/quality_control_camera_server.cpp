@@ -76,7 +76,7 @@ bool QualityControlCameraServer::checkAndProcessRequests()
         //TODO: send error reply
         img_msg.set_height(0);
         img_msg.set_width(0);
-        img_msg.set_encoding(Image::COLOR_RGB);
+        img_msg.set_encoding(0);
         img_msg.set_step(0);
 
         const char d = 'c';
@@ -111,24 +111,9 @@ void QualityControlCameraServer::packImageIntoMessage(const cv::Mat &image, Imag
 {
     img_msg.set_width(image.cols);
     img_msg.set_height(image.rows);
-    img_msg.set_encoding(Image::COLOR_RGB); //ToDO
+    img_msg.set_encoding(16);
     img_msg.set_step(image.cols * image.elemSize());
     img_msg.set_data(image.data, image.rows * image.cols * image.elemSize());
-
-    std::cout << "encoding type:" << image.type() << std::endl;
-
-    /*
-    enum Encoding
-    {
-        COLOR_GRAYSCALE = 0; // image consists of only one channel (intensity)
-        COLOR_RGB = 1;  // image consists of three color channels: r, g, b
-        COLOR_BGR = 2;  // image consists of three color channels: b, g, r
-    }
-
-
-    required Encoding encoding = 3;
-    */
-
 }
 
 void QualityControlCameraServer::sendStatusMessage()

@@ -20,7 +20,6 @@ class Camera
         bool is_connected();
 
         bool getImage(cv::Mat &image);
-        bool setResolution(const unsigned int &width, const unsigned int &height);
 
     private:
         cv::VideoCapture *video_capture_;

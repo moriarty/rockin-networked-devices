@@ -90,12 +90,6 @@ bool QualityControlCameraServer::checkAndProcessRequests()
         return false;
     }
 
-    if (img_request_msg.has_resolution())
-    {
-        if(img_request_msg.resolution() == ImageRequest::WXGA_1280_720)
-            camera_->setResolution(320, 160);
-    }
-
     packImageIntoMessage(image, img_msg);
 
     img_msg.SerializeToString(&serialized_string);

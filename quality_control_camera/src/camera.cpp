@@ -48,27 +48,6 @@ bool Camera::getImage(cv::Mat &image)
         return false;
     }
 
-    is_connected_   = true;
-    return true;
-}
-
-bool Camera::setResolution(const unsigned int &width, const unsigned int &height)
-{
-    double current_width = 0;
-    /*
-    current_width = video_capture_->get(CV_CAP_PROP_FRAME_WIDTH);
-
-    if(current_width == 0)
-        return false;
-
-    if(!video_capture_->set(CV_CAP_PROP_FRAME_WIDTH, width))
-        return false;
-    if(!video_capture_->set(CV_CAP_PROP_FRAME_HEIGHT, height))
-    {
-        // if height could not be set, reset the width
-        video_capture_->set(CV_CAP_PROP_FRAME_WIDTH, current_width);
-        return false;
-    }
-    */
+    is_connected_ = true;
     return true;
 }

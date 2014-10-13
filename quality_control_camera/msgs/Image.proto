@@ -1,11 +1,5 @@
 message ImageRequest
 {
-    enum Resolution
-    {
-        WXGA_1280_720 = 1;
-    }
-
-	required Resolution resolution = 1;
 }
 
 message Image

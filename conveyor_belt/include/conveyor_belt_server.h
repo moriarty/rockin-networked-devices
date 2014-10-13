@@ -27,7 +27,7 @@ class ConveyorBeltServer
         /**
          * starts a ZMQ publisher (sending status messages)
          *
-         * @param ip_address ip address or interface name of the device on which the service is provided
+         * @param ip_address ip address or interface name of the device on which the publisher sends the data
          * @param status_msg_port port on which the server sends status messages
          */
         void startPublisher(const std::string ip_address, const unsigned int status_msg_port);

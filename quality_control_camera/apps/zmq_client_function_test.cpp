@@ -66,7 +66,6 @@ int main(int argc, char *argv[])
 
     std::cout << "Request image" << std::endl;
     image_request_msg = ImageRequest();
-    image_request_msg.set_resolution(ImageRequest::WXGA_1280_720);
     sendRequest(service, image_request_msg);
 
     std::cout << "wait or reply" << std::endl;

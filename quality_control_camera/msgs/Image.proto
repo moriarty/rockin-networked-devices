@@ -10,16 +10,9 @@ message ImageRequest
 
 message Image
 {
-    enum Encoding
-    {
-        //COLOR_GRAYSCALE = 0; // image consists of only one channel (intensity)
-        COLOR_RGB = 1;	// image consists of three color channels: r, g, b
-        //COLOR_BGR = 2;	// image consists of three color channels: b, g, r
-    }
-
-	required uint32 height = 1;
+    required uint32 height = 1;
     required uint32 width = 2;
-	required Encoding encoding = 3;
-	required uint32 step = 4;
+    required uint32 encoding = 3;
+    required uint32 step = 4;
     required bytes data = 5;
 }

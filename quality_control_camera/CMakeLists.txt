@@ -26,7 +26,7 @@ add_library(camera SHARED
   src/camera.cpp
 )
 target_link_libraries(camera
-  ${OpenCV_LIBRARIES}
+  ${OpenCV_LIBS}
 )
 
 add_library(quality_control_camera_server SHARED

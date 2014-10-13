@@ -73,13 +73,13 @@ bool QualityControlCameraServer::checkAndProcessRequests()
     // check if retrieving a image from the camera was successful
     if (!camera_->getImage(image))
     {
-        //TODO: send error reply
+        // send an empt image in case of an error
         img_msg.set_height(0);
         img_msg.set_width(0);
         img_msg.set_encoding(0);
         img_msg.set_step(0);
 
-        const char d = 'c';
+        const char d = ' ';
         img_msg.set_data(&d);
 
         img_msg.SerializeToString(&serialized_string);

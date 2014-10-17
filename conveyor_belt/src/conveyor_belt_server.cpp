@@ -8,13 +8,10 @@
 #include <conveyor_belt_server.h>
 
 ConveyorBeltServer::ConveyorBeltServer() :
-        zmq_context_(NULL), zmq_publisher_(NULL), zmq_subscriber_(NULL)
+        zmq_context_(NULL), zmq_publisher_(NULL), zmq_subscriber_(NULL), isZmqCommunicationInitalized_(false)
 {
     zmq_context_ = new zmq::context_t(1);
     conveyor_device_ = new ConveyorBeltKfD44();
-
-    while (conveyor_device_->connect("/dev/conveyor") != 0)
-        sleep(1);
 }
 
 ConveyorBeltServer::~ConveyorBeltServer()
@@ -29,19 +26,70 @@ ConveyorBeltServer::~ConveyorBeltServer()
         delete zmq_subscriber_;
 }
 
-void ConveyorBeltServer::startPublisher(const std::string ip_address, const unsigned int status_msg_port)
+bool ConveyorBeltServer::connectConveyorBelt(std::string device_name)
 {
-    // add publisher to send status messages
-    zmq_publisher_ = new zmq::socket_t(*zmq_context_, ZMQ_PUB);
-    zmq_publisher_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(status_msg_port)).c_str());
+    if (conveyor_device_->connect(device_name) == 0)
+        return true;
+
+    return false;
 }
 
-void ConveyorBeltServer::startSubscriber(const std::string ip_address, const unsigned int command_msg_port)
+bool ConveyorBeltServer::startPublisher(const std::string ip_address, const unsigned int status_msg_port)
 {
+    uint64_t hwm = 1;
+
+    // add publisher to send status messages
+    try
+    {
+        zmq_publisher_ = new zmq::socket_t(*zmq_context_, ZMQ_PUB);
+        zmq_publisher_->setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
+
+        zmq_publisher_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(status_msg_port)).c_str());
+        isZmqCommunicationInitalized_ = true;
+    } catch (...)
+    {
+        isZmqCommunicationInitalized_ = false;
+    }
+
+    return isZmqCommunicationInitalized_;
+}
+
+void ConveyorBeltServer::stopPublisher()
+{
+    isZmqCommunicationInitalized_ = false;
+    zmq_publisher_->close();
+}
+
+bool ConveyorBeltServer::startSubscriber(const std::string ip_address, const unsigned int command_msg_port)
+{
+    uint64_t hwm = 1;
+
     // add subscriber to receive command messages from a client
-    zmq_subscriber_ = new zmq::socket_t(*zmq_context_, ZMQ_SUB);
-    zmq_subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    zmq_subscriber_->connect(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(command_msg_port)).c_str());
+    try
+    {
+        zmq_subscriber_ = new zmq::socket_t(*zmq_context_, ZMQ_SUB);
+        zmq_subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0);
+        zmq_subscriber_->setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
+
+        zmq_subscriber_->connect(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(command_msg_port)).c_str());
+        isZmqCommunicationInitalized_ = true;
+    } catch (...)
+    {
+        isZmqCommunicationInitalized_ = false;
+    }
+
+    return isZmqCommunicationInitalized_;
+}
+
+void ConveyorBeltServer::stopSubscriber()
+{
+    isZmqCommunicationInitalized_ = false;
+    zmq_subscriber_->close();
+}
+
+bool ConveyorBeltServer::isCommunctionInitialized()
+{
+    return isZmqCommunicationInitalized_;
 }
 
 void ConveyorBeltServer::receiveAndProcessData()
@@ -52,7 +100,6 @@ void ConveyorBeltServer::receiveAndProcessData()
     // check if a new a new message has arrived and if it is a conveyor belt command message
     if (zmq_subscriber_->recv(&zmq_message, ZMQ_NOBLOCK) && conveyor_command_msg.ParseFromArray(zmq_message.data(), zmq_message.size()))
         setConveyorBeltParameters(conveyor_command_msg);
-
 }
 
 void ConveyorBeltServer::sendStatusMessage()

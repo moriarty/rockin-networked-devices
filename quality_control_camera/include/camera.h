@@ -17,13 +17,13 @@ class Camera
         virtual ~Camera();
 
         bool connect(const unsigned int &device_id);
-        bool is_connected();
+        void disconnect();
+        bool isConnected();
 
         bool getImage(cv::Mat &image);
 
     private:
         cv::VideoCapture *video_capture_;
-        bool is_connected_;
 };
 
 #endif /* CAMERA_H_ */

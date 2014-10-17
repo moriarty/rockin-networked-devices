@@ -17,7 +17,6 @@
 #include <Image.pb.h>
 #include <Camera.pb.h>
 
-
 class QualityControlCameraServer
 {
     public:
@@ -29,37 +28,95 @@ class QualityControlCameraServer
          *
          * @param ip_address ip address or interface name of the device on which the publisher sends the data
          * @param status_msg_port port on which the server sends status messages
+         * @return true if the publisher established successful, otherwise false
          */
-        void startPublisher(const std::string &ip_address, const unsigned int &status_msg_port);
+
+        bool startPublisher(const std::string &ip_address, const unsigned int &status_msg_port);
+
+        /**
+         * destroys the publisher socket
+         */
+        void stopPublisher();
 
         /**
          * starts a ZMQ service (request/reply)
          *
          * @param ip_address ip address or interface name of the device on which the service is provided
          * @param service_port port port on which the service is advertised
+         * @return true if the publisher established successful, otherwise false
          */
-        void startService(const std::string &ip_address, const unsigned int &service_port);
+        bool startService(const std::string &ip_address, const unsigned int &service_port);
+
+        /**
+         * destroys the service socket
+         */
+        void stopService();
+
+        /**
+         *
+         * @return true if the ZMQ communication is initialized, otherwise false
+         */
+        bool isCommunctionInitialized();
+
+        /**
+         * ToDo: docu
+         * @return
+         */
+        bool connectCamera();
+
+        /**
+         * ToDo: doco
+         */
+        void disconnectCamera();
+
+        /**
+         * ToDo: docu
+         * @return
+         */
+        bool isCameraConnected();
 
         /**
          * checks and processes incoming data
+         *
+         * @retval 0 request received, processed and replied successfully
+         * @retval -1 no request available
+         * @retval -2 communication error
+         * @retval -3 wrong message type received
+         * @retval -4 could not retrieve an image from the camera
          */
-        bool checkAndProcessRequests();
+        int checkAndProcessRequests();
 
         /**
          * sends a status message
+         * @return true if the message was sent successful, otherwise false
          */
-        void sendStatusMessage();
+        bool sendStatusMessage();
+
+        /**
+         * ToDo: docu
+         *
+         * @param is_connected
+         * @return
+         */
+        bool sendStatusMessage(bool is_connected);
 
     private:
         void packImageIntoMessage(const cv::Mat &image, Image &img_msg);
+
+        /**
+         * sends an empty image as a reply to a request
+         *
+         * @return true if the message was sent successful, otherwise false
+         */
+        bool sendEmptyImage();
 
         unsigned int default_camera_device_id_;
         Camera *camera_;
 
         zmq::context_t *zmq_context_;
-
         zmq::socket_t *zmq_publisher_;
         zmq::socket_t *zmq_service_;
+        bool isZmqCommunicationInitalized_;
 };
 
 #endif /* QUALITY_CONTROL_CAMERA_SERVER_H_ */

@@ -20,7 +20,6 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-
 ### LIBRARIES #################################################################
 add_library(camera SHARED
   src/camera.cpp
@@ -36,7 +35,7 @@ add_library(quality_control_camera_server SHARED
 target_link_libraries(quality_control_camera_server
   camera
   ${PROTOBUF_LIBRARIES} 
-  ${OpenCV_LIBRARIES}
+  ${OpenCV_LIBS}
 )
 
 ### EXECUTABLES #################################################################
@@ -56,4 +55,5 @@ add_executable(zmq_client_function_test
 target_link_libraries(zmq_client_function_test
   zmq
   ${PROTOBUF_LIBRARIES}
+  ${OpenCV_LIBS}
 )

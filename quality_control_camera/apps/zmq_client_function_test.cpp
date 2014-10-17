@@ -3,6 +3,7 @@
 #include <Image.pb.h>
 #include <Camera.pb.h>
 #include <stdio.h>
+#include <opencv2/highgui/highgui.hpp>
 
 void sleep_with_progress(unsigned int seconds)
 {
@@ -43,38 +44,42 @@ int main(int argc, char *argv[])
     ImageRequest image_request_msg;
     Image image_msg;
 
+    cv::namedWindow("Received Image", cv::WINDOW_AUTOSIZE);
+
     zmq::context_t context(1);
     zmq::message_t request;
+    uint64_t hwm = 1;
 
     zmq::socket_t service(context, ZMQ_REQ);
-    service.connect("tcp://127.0.0.1:55557");   //ToDO change hostname
+    service.connect("tcp://quality-control-camera:55557");
 
     // add subscriber to receive status messages from a client
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    subscriber.connect("tcp://127.0.0.1:55556");    //ToDO change hostname
+    subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
+    subscriber.connect("tcp://quality-control-camera:55556");
 
     // give the publisher/subscriber some time to get ready
     sleep(1);
 
     receiveAndPrintStatusMessage(subscriber);
+
+    for (unsigned int i = 0; i < 20; i++)
+    {
+
+        image_request_msg = ImageRequest();
+        sendRequest(service, image_request_msg);
+
+        if (service.recv(&request) && image_msg.ParseFromArray(request.data(), request.size()))
+        {
+            cv::Mat image_to_display(image_msg.height(), image_msg.width(), image_msg.encoding(), const_cast<char*>(&image_msg.data()[0]), image_msg.step());
+
+            cv::imshow("Received Image", image_to_display);
+            cv::waitKey(100);
+        }
+    }
+
     receiveAndPrintStatusMessage(subscriber);
-    receiveAndPrintStatusMessage(subscriber);
-    receiveAndPrintStatusMessage(subscriber);
-
-
-
-    std::cout << "Request image" << std::endl;
-    image_request_msg = ImageRequest();
-    sendRequest(service, image_request_msg);
-
-    std::cout << "wait or reply" << std::endl;
-
-    if(service.recv(&request) && image_msg.ParseFromArray(request.data(), request.size()))
-        std::cout << "image received -> width: " << image_msg.width() << " height: " << image_msg.height() << std::endl;
-
-    receiveAndPrintStatusMessage(subscriber);
-
 
     google::protobuf::ShutdownProtobufLibrary();
 

@@ -7,32 +7,42 @@
 
 #include "camera.h"
 
-Camera::Camera() : video_capture_(NULL), is_connected_(false)
+Camera::Camera() :
+        video_capture_(NULL)
 {
+    video_capture_ = new cv::VideoCapture();
 }
 
 Camera::~Camera()
 {
-    if(video_capture_ == NULL)
+    video_capture_->release();
+
+    if (video_capture_ != NULL)
         delete video_capture_;
 }
 
 bool Camera::connect(const unsigned int &device_id)
 {
-    video_capture_ = new cv::VideoCapture(device_id);
+    if (!video_capture_->open(device_id))
+        return false;
 
-    if(video_capture_->isOpened())
+    if (!isConnected())
     {
-        is_connected_ = true;
-        return true;
+        video_capture_->release();
+        return false;
     }
 
-    return false;
+    return true;
 }
 
-bool Camera::is_connected()
+void Camera::disconnect()
 {
-    if(is_connected_ && video_capture_->isOpened())
+    video_capture_->release();
+}
+
+bool Camera::isConnected()
+{
+    if (video_capture_->isOpened() && video_capture_->grab())
         return true;
 
     return false;
@@ -42,12 +52,8 @@ bool Camera::getImage(cv::Mat &image)
 {
     cv::Mat captured_image;
 
-    if(!video_capture_->read(image))
-    {
-        is_connected_ = false;
+    if (!video_capture_->read(image))
         return false;
-    }
 
-    is_connected_ = true;
     return true;
 }

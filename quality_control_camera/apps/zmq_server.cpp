@@ -6,12 +6,71 @@
 using namespace boost::posix_time;
 using namespace boost::asio;
 
+enum State
+{
+    INIT_COMMUNICATION, CONNECT_TO_DEVICE, UPDATE
+};
+
+State initializeCommunication(State &component_state, QualityControlCameraServer &server)
+{
+    if (server.isCommunctionInitialized())
+    {
+        server.stopPublisher();
+        server.stopService();
+    }
+
+    if (!server.startPublisher("eth0", 55556))
+    {
+        sleep(1);   // try only every second to initialize the connection
+        return INIT_COMMUNICATION;
+    }
+
+    if (!server.startService("eth0", 55557))
+    {
+        server.stopPublisher();
+        sleep(1);   // try only every second to initialize the connection
+        return INIT_COMMUNICATION;
+    }
+
+    return CONNECT_TO_DEVICE;
+}
+
+State connectToDevice(State &component_state, QualityControlCameraServer &server)
+{
+    server.sendStatusMessage();
+
+    if (server.isCameraConnected())
+        server.disconnectCamera();
+
+    if (!server.connectCamera())
+    {
+        sleep(1);   // try only every second to connect to the device
+        return CONNECT_TO_DEVICE;
+    }
+
+    return UPDATE;
+}
+
+State update(State &component_state, QualityControlCameraServer &server)
+{
+    int process_result = -2;
+    bool status_result = -2;
+
+    process_result = server.checkAndProcessRequests();
+    status_result = server.sendStatusMessage();
+
+    if (process_result == -2 || !status_result)    // communication error
+        return INIT_COMMUNICATION;
+    else if (process_result == -4)   // device error
+        return CONNECT_TO_DEVICE;
+
+    return UPDATE;
+}
+
 int main(int argc, char *argv[])
 {
-    QualityControlCameraServer *server = new QualityControlCameraServer();
-
-    server->startService("127.0.0.1", 55557);
-    server->startPublisher("127.0.0.1", 55556);
+    State component_state = INIT_COMMUNICATION;
+    QualityControlCameraServer server = QualityControlCameraServer();
 
     time_duration time_diff;
     ptime prev_time_send = microsec_clock::local_time();
@@ -22,20 +81,21 @@ int main(int argc, char *argv[])
         // the main loop runs every 20ms (i.e. check for incoming data)
         deadline_timer loop_timer(io_srv, milliseconds(20));
 
-        server->checkAndProcessRequests();
-
-        // every 200ms a status message will be sent
-        time_diff = microsec_clock::local_time() - prev_time_send;
-        if (time_diff.total_milliseconds() > 200)
+        switch (component_state)
         {
-            server->sendStatusMessage();
-            prev_time_send = microsec_clock::local_time();
+            case INIT_COMMUNICATION:
+                component_state = initializeCommunication(component_state, server);
+            break;
+            case CONNECT_TO_DEVICE:
+                component_state = connectToDevice(component_state, server);
+            break;
+            case UPDATE:
+                component_state = update(component_state, server);
+            break;
         }
 
         loop_timer.wait();
     }
-
-    delete server;
 
     return 0;
 }

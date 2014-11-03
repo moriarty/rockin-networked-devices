@@ -116,7 +116,7 @@ class QualityControlCameraServer
         zmq::context_t *zmq_context_;
         zmq::socket_t *zmq_publisher_;
         zmq::socket_t *zmq_service_;
-        bool isZmqCommunicationInitalized_;
+        bool is_zmq_communication_initalized_;
 };
 
 #endif /* QUALITY_CONTROL_CAMERA_SERVER_H_ */

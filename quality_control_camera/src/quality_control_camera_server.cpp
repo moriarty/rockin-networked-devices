@@ -30,7 +30,7 @@ QualityControlCameraServer::~QualityControlCameraServer()
     if (camera_ != NULL)
         delete camera_;
 
-    isZmqCommunicationInitalized_ = false;
+    is_zmq_communication_initalized_ = false;
 }
 
 bool QualityControlCameraServer::startPublisher(const std::string &ip_address, const unsigned int &status_msg_port)
@@ -44,18 +44,18 @@ bool QualityControlCameraServer::startPublisher(const std::string &ip_address, c
         zmq_publisher_->setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
 
         zmq_publisher_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(status_msg_port)).c_str());
-        isZmqCommunicationInitalized_ = true;
+        is_zmq_communication_initalized_ = true;
     } catch (...)
     {
-        isZmqCommunicationInitalized_ = false;
+        is_zmq_communication_initalized_ = false;
     }
 
-    return isZmqCommunicationInitalized_;
+    return is_zmq_communication_initalized_;
 }
 
 void QualityControlCameraServer::stopPublisher()
 {
-    isZmqCommunicationInitalized_ = false;
+    is_zmq_communication_initalized_ = false;
     zmq_publisher_->close();
 }
 
@@ -67,24 +67,24 @@ bool QualityControlCameraServer::startService(const std::string &ip_address, con
         zmq_service_ = new zmq::socket_t(*zmq_context_, ZMQ_REP);
 
         zmq_service_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(service_port)).c_str());
-        isZmqCommunicationInitalized_ = true;
+        is_zmq_communication_initalized_ = true;
     } catch (...)
     {
-        isZmqCommunicationInitalized_ = false;
+        is_zmq_communication_initalized_ = false;
     }
 
-    return isZmqCommunicationInitalized_;
+    return is_zmq_communication_initalized_;
 }
 
 void QualityControlCameraServer::stopService()
 {
-    isZmqCommunicationInitalized_ = false;
+    is_zmq_communication_initalized_ = false;
     zmq_service_->close();
 }
 
 bool QualityControlCameraServer::isCommunctionInitialized()
 {
-    return isZmqCommunicationInitalized_;
+    return is_zmq_communication_initalized_;
 }
 
 bool QualityControlCameraServer::connectCamera()

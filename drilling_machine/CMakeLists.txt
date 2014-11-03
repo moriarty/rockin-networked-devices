@@ -4,7 +4,7 @@ project(drilling_machine)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake_modules")
+SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 
 find_package(Boost 1.46 REQUIRED COMPONENTS system)
 find_package(Protobuf REQUIRED)

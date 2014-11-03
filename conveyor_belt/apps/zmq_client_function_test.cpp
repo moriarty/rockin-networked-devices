@@ -23,6 +23,8 @@ void sendMessage(zmq::socket_t &publisher, ConveyorBeltCommandMessage msg)
     memcpy(query->data(), serialized_string.c_str(), serialized_string.length());
 
     publisher.send(*query);
+
+    delete query;
 }
 
 void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)

@@ -25,6 +25,8 @@ void sendRequest(zmq::socket_t &service, ImageRequest msg)
     memcpy(query->data(), serialized_string.c_str(), serialized_string.length());
 
     service.send(*query);
+
+    delete query;
 }
 
 void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)

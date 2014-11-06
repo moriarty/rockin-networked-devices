@@ -35,7 +35,10 @@ bool DrillingMachine::connect()
         std::cout << "Could not initialize the motor(s): " << e.what();
 
         if (motor_vertical_motion_ != NULL)
+        {
             delete motor_vertical_motion_;
+            motor_vertical_motion_ = NULL;
+        }
 
         return false;
     }
@@ -70,7 +73,10 @@ void DrillingMachine::disconnect()
     switchMotorOff();
 
     if (motor_vertical_motion_ != NULL)
+    {
         delete motor_vertical_motion_;
+        motor_vertical_motion_ = NULL;
+    }
 }
 
 bool DrillingMachine::isConnected()

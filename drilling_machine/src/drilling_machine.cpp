@@ -75,6 +75,9 @@ void DrillingMachine::disconnect()
 
 bool DrillingMachine::isConnected()
 {
+    if (motor_vertical_motion_ == NULL)
+        return false;
+
     return youbot::EthercatMaster::getInstance().isEtherCATConnectionEstablished();
 }
 

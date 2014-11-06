@@ -9,8 +9,8 @@ SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 find_package(Boost 1.46 REQUIRED COMPONENTS system)
 find_package(Protobuf REQUIRED)
 find_package(OODL_YouBot REQUIRED)
+find_package(Wiringpi REQUIRED)
 
-#find_package(Wiringpi REQUIRED)
 
 message("OODL_YOUBOT_FOUND: " ${OODL_YOUBOT_FOUND})
 message("OODL_YOUBOT_INCLUDE_DIR: " ${OODL_YOUBOT_INCLUDE_DIR})
@@ -31,6 +31,7 @@ include_directories(
   include/
   ${Boost_INCLUDE_DIRS}
   ${OODL_YOUBOT_INCLUDE_DIR}
+  ${WIRINGPI_INCLUDE_DIR}
 )
 
 ### LIBRARIES #################################################################
@@ -39,6 +40,7 @@ add_library(drilling_machine SHARED
 )
 target_link_libraries(drilling_machine
   ${OODL_YOUBOT_LIBRARIES}
+  ${WIRINGPI_LIBRARIES}
 )
 
 add_library(drilling_machine_server SHARED

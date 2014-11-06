@@ -11,16 +11,7 @@ find_package(Protobuf REQUIRED)
 find_package(OODL_YouBot REQUIRED)
 find_package(Wiringpi REQUIRED)
 
-
-message("OODL_YOUBOT_FOUND: " ${OODL_YOUBOT_FOUND})
-message("OODL_YOUBOT_INCLUDE_DIR: " ${OODL_YOUBOT_INCLUDE_DIR})
-message("OODL_YOUBOT_LIBRARIES: " ${OODL_YOUBOT_LIBRARIES})
-message("OODL_YOUBOT_LIBRARIES_DIR: " ${OODL_YOUBOT_LIBRARIES_DIR})
-message("OODL_YOUBOT_CONFIG_DIR: " ${OODL_YOUBOT_CONFIG_DIR})
-
 add_definitions(-DPROJECT_DIR="${PROJECT_SOURCE_DIR}")
-
-
 
 # generate header and source for proto messages
 file(GLOB ProtoFiles "${PROJECT_SOURCE_DIR}/msgs/*.proto")

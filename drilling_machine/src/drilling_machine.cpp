@@ -26,7 +26,6 @@ bool DrillingMachine::connect()
         motor_vertical_motion_ = new youbot::YouBotGripperTHK("drilling_machine_motor", project_directory + "/config");
 
         motor_vertical_motion_->doJointCommutation();
-        motor_vertical_motion_->calibrateGripperTHK();
 
     } catch (std::exception& e)
     {
@@ -39,6 +38,14 @@ bool DrillingMachine::connect()
         }
 
         return false;
+    }
+
+    try
+    {
+        motor_vertical_motion_->calibrateGripperTHK();
+    } catch (std::exception& e)
+    {
+        std::cout << "WARNING (can be ignored): " << e.what();
     }
 
     switchMotorOn();

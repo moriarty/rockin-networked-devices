@@ -21,8 +21,6 @@ bool DrillingMachine::connect()
 {
     std::string project_directory = PROJECT_DIR;
 
-    std::cout << "prj dir: " << project_directory << std::endl;
-
     try
     {
         motor_vertical_motion_ = new youbot::YouBotGripperTHK("drilling_machine_motor", project_directory + "/config");

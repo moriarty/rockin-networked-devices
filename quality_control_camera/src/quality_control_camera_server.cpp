@@ -8,7 +8,7 @@
 #include <quality_control_camera_server.h>
 
 QualityControlCameraServer::QualityControlCameraServer() :
-        zmq_context_(NULL), zmq_publisher_(NULL), zmq_service_(NULL), default_camera_device_id_(0), isZmqCommunicationInitalized_(false)
+        zmq_context_(NULL), zmq_publisher_(NULL), zmq_service_(NULL), default_camera_device_id_(0), is_zmq_communication_initalized_(false)
 {
     // create ZMQ context
     zmq_context_ = new zmq::context_t(1);

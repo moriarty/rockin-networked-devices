@@ -4,6 +4,8 @@
 #include <Camera.pb.h>
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <unistd.h>
+
 
 void sleep_with_progress(unsigned int seconds)
 {

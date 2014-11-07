@@ -1,6 +1,7 @@
 #include <iostream>
 #include <zmq.hpp>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <DrillingMachine.pb.h>
 

@@ -2,6 +2,7 @@
 #include <zmq.hpp>
 #include <ConveyorBelt.pb.h>
 #include <stdio.h>
+#include <unistd.h>
 
 void sleep_with_progress(unsigned int seconds)
 {

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     DrillingMachineCommand command_msg;
 
     zmq::context_t context(1);
-    zmq::message_t request;
+
     uint64_t hwm = 1;
 
     zmq::socket_t publisher(context, ZMQ_PUB);

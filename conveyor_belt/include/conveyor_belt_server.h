@@ -82,7 +82,7 @@ class ConveyorBeltServer
          *
          * @param msg message with the parameters to be set
          */
-        void setConveyorBeltParameters(ConveyorBeltCommandMessage msg);
+        void setConveyorBeltParameters(ConveyorBeltCommand msg);
 
         zmq::context_t *zmq_context_;
         zmq::socket_t *zmq_publisher_;

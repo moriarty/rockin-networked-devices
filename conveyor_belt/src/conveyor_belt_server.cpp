@@ -95,7 +95,7 @@ bool ConveyorBeltServer::isCommunctionInitialized()
 void ConveyorBeltServer::receiveAndProcessData()
 {
     zmq::message_t zmq_message;
-    ConveyorBeltCommandMessage conveyor_command_msg = ConveyorBeltCommandMessage();
+    ConveyorBeltCommand conveyor_command_msg = ConveyorBeltCommand();
 
     // check if a new a new message has arrived and if it is a conveyor belt command message
     if (zmq_subscriber_->recv(&zmq_message, ZMQ_NOBLOCK) && conveyor_command_msg.ParseFromArray(zmq_message.data(), zmq_message.size()))
@@ -104,7 +104,7 @@ void ConveyorBeltServer::receiveAndProcessData()
 
 void ConveyorBeltServer::sendStatusMessage()
 {
-    ConveyorBeltStatusMessage status_msg = ConveyorBeltStatusMessage();
+    ConveyorBeltStatus status_msg = ConveyorBeltStatus();
     std::string serialized_string;
 
     status_msg.set_is_device_connected(conveyor_device_->is_connected());
@@ -123,7 +123,7 @@ void ConveyorBeltServer::sendStatusMessage()
     delete reply;
 }
 
-void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommandMessage msg)
+void ConveyorBeltServer::setConveyorBeltParameters(ConveyorBeltCommand msg)
 {
     quantity<si::frequency> default_frequency = 75 * si::hertz;
 

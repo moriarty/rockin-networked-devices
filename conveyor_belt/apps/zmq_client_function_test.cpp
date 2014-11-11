@@ -14,7 +14,7 @@ void sleep_with_progress(unsigned int seconds)
     std::cout << std::endl;
 }
 
-void sendMessage(zmq::socket_t &publisher, ConveyorBeltCommandMessage msg)
+void sendMessage(zmq::socket_t &publisher, ConveyorBeltCommand msg)
 {
     std::string serialized_string;
 
@@ -31,7 +31,7 @@ void sendMessage(zmq::socket_t &publisher, ConveyorBeltCommandMessage msg)
 void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)
 {
     zmq::message_t zmq_message;
-    ConveyorBeltStatusMessage status_msg;
+    ConveyorBeltStatus status_msg;
 
     if (subscriber.recv(&zmq_message, ZMQ_NOBLOCK))
     {
@@ -43,7 +43,7 @@ void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)
 
 int main(int argc, char *argv[])
 {
-    ConveyorBeltCommandMessage conveyor_command_msg;
+    ConveyorBeltCommand conveyor_command_msg;
 
     zmq::context_t context(1);
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     receiveAndPrintStatusMessage(subscriber);
 
     std::cout << "Moving the belt in FORWARD direction for 5 seconds " << std::flush;
-    conveyor_command_msg = ConveyorBeltCommandMessage();
+    conveyor_command_msg = ConveyorBeltCommand();
     conveyor_command_msg.set_mode(START);
     sendMessage(publisher, conveyor_command_msg);
     sleep_with_progress(5);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     receiveAndPrintStatusMessage(subscriber);
 
     std::cout << "Stopping the belt" << std::endl;
-    conveyor_command_msg = ConveyorBeltCommandMessage();
+    conveyor_command_msg = ConveyorBeltCommand();
     conveyor_command_msg.set_mode(STOP);
     sendMessage(publisher, conveyor_command_msg);
 

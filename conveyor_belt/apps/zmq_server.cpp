@@ -12,7 +12,9 @@ enum State
 
 State connectToDevice(State &component_state, ConveyorBeltServer &server)
 {
-    if(!server.connectConveyorBelt("/dev/conveyor"))
+    server.sendStatusMessage();
+
+    if (!server.connectConveyorBelt("/dev/conveyor"))
     {
         sleep(1);   // try to connect only every second in case of an error
         return CONNECT_TO_DEVICE;

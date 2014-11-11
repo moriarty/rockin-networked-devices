@@ -55,13 +55,13 @@ int main(int argc, char *argv[])
     uint64_t hwm = 1;
 
     zmq::socket_t service(context, ZMQ_REQ);
-    service.connect("tcp://quality-control-camera:55557");
+    service.connect("tcp://quality-control-camera:55522");
 
     // add subscriber to receive status messages from a client
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    subscriber.connect("tcp://quality-control-camera:55556");
+    subscriber.connect("tcp://quality-control-camera:55521");
 
     // give the publisher/subscriber some time to get ready
     sleep(1);

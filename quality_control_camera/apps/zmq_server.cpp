@@ -19,13 +19,13 @@ State initializeCommunication(State &component_state, QualityControlCameraServer
         server.stopService();
     }
 
-    if (!server.startPublisher("eth0", 55556))
+    if (!server.startPublisher("eth0", 55521))
     {
         sleep(1);   // try only every second to initialize the connection
         return INIT_COMMUNICATION;
     }
 
-    if (!server.startService("eth0", 55557))
+    if (!server.startService("eth0", 55522))
     {
         server.stopPublisher();
         sleep(1);   // try only every second to initialize the connection

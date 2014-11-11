@@ -51,13 +51,13 @@ int main(int argc, char *argv[])
 
     zmq::socket_t publisher(context, ZMQ_PUB);
     publisher.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    publisher.bind("tcp://eth0:55555");
+    publisher.bind("tcp://eth0:55502");
 
     // add subscriber to receive status messages from a the conveyor belt
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    subscriber.connect("tcp://conveyor-belt:55556");
+    subscriber.connect("tcp://conveyor-belt:55501");
 
     // give the publisher/subscriber some time to get ready
     sleep(1);

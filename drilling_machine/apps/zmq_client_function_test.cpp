@@ -68,13 +68,13 @@ int main(int argc, char *argv[])
     command_msg = DrillingMachineCommand();
     command_msg.set_command(DrillingMachineCommand::MOVE_DOWN);
     sendMessage(publisher, command_msg);
-    sleep_with_progress(5);
+    sleep_with_progress(10);
 
     std::cout << "Moving drilling machine up " << std::flush;
     command_msg = DrillingMachineCommand();
     command_msg.set_command(DrillingMachineCommand::MOVE_UP);
     sendMessage(publisher, command_msg);
-    sleep_with_progress(5);
+    sleep_with_progress(10);
 
     receiveAndPrintStatusMessage(subscriber);
 

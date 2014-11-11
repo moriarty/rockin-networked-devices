@@ -18,7 +18,7 @@ State connectToDevice(State &component_state, ConveyorBeltServer &server)
         return CONNECT_TO_DEVICE;
     }
 
-    return INIT_COMMUNICATION;
+    return UPDATE;
 }
 
 State initializeCommunication(State &component_state, ConveyorBeltServer &server)
@@ -42,7 +42,7 @@ State initializeCommunication(State &component_state, ConveyorBeltServer &server
         return INIT_COMMUNICATION;
     }
 
-    return UPDATE;
+    return CONNECT_TO_DEVICE;
 }
 
 State update(State &component_state, ConveyorBeltServer &server)
@@ -55,7 +55,7 @@ State update(State &component_state, ConveyorBeltServer &server)
 
 int main(int argc, char *argv[])
 {
-    State component_state = CONNECT_TO_DEVICE;
+    State component_state = INIT_COMMUNICATION;
     ConveyorBeltServer server = ConveyorBeltServer();
 
     time_duration time_diff;
@@ -69,17 +69,13 @@ int main(int argc, char *argv[])
 
         switch (component_state)
         {
-            case CONNECT_TO_DEVICE:
-                std::cout << "   state ---> CONNECT_TO_DEVICE" << std::endl;
-                component_state = connectToDevice(component_state, server);
-            break;
             case INIT_COMMUNICATION:
-                std::cout << "   state ---> INIT_COMMUNICATION" << std::endl;
                 component_state = initializeCommunication(component_state, server);
             break;
-
+            case CONNECT_TO_DEVICE:
+                component_state = connectToDevice(component_state, server);
+            break;
             case UPDATE:
-                std::cout << "   state ---> UPDATE" << std::endl;
                 component_state = update(component_state, server);
             break;
         }

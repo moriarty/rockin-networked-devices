@@ -122,3 +122,17 @@ int DrillingMachine::getMotorPosition()
         return -2;
 }
 
+bool DrillingMachine::isMotorMoving()
+{
+    std::vector<youbot::JointSensedVelocity> joint_velocities;
+
+    motor_vertical_motion_->getJointData(joint_velocities);
+
+    if (joint_velocities.size() < 1)
+        return false;
+
+    if (joint_velocities[0].angularVelocity.value() == 0.0)
+        return false;
+    else
+        return true;
+}

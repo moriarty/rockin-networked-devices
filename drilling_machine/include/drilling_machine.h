@@ -38,6 +38,9 @@ class DrillingMachine
          */
         int getMotorPosition();
 
+        bool isMotorMoving();
+
+
     private:
         void switchMotorOn();
         void switchMotorOff();

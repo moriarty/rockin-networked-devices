@@ -55,12 +55,12 @@ bool DrillingMachine::connect()
 
 bool DrillingMachine::moveDrillDown()
 {
-    return moveMotor((-3.14 * 1.5), (6.28 / 15.0), 2.0);
+    return moveMotor(DOWN_POSITION, (6.28 / 15.0), 2.0);
 }
 
 bool DrillingMachine::moveDrillUp()
 {
-    return moveMotor(-0.1, (6.28 / 10.0 * 2), 0.8);
+    return moveMotor(UP_POSITION, (6.28 / 10.0 * 2), 0.8);
 }
 
 bool DrillingMachine::moveMotor(const float &target_position, const float &max_velocity, const float abort_current)

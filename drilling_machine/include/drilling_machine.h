@@ -11,6 +11,10 @@
 #include <wiringPi.h>
 #include <youbot/YouBotGripperTHK.hpp>
 
+#define DOWN_POSITION   (-3.14 * 1.5)
+#define UP_POSITION     (-0.1)
+
+
 class DrillingMachine
 {
     public:

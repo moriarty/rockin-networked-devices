@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     uint64_t hwm = 1;
 
     zmq::socket_t publisher(context, ZMQ_PUB);
+    publisher.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
     publisher.bind("tcp://eth0:55555");
 
     // add subscriber to receive status messages from a client

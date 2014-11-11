@@ -101,3 +101,24 @@ void DrillingMachine::switchMotorOff()
 {
     digitalWrite(1, 0);     // turn GPIO off
 }
+
+int DrillingMachine::getMotorPosition()
+{
+    std::vector<youbot::JointSensedAngle> joint_angles;
+
+    motor_vertical_motion_->getJointData(joint_angles);
+
+    if (joint_angles.size() < 1)
+        return -1;
+
+    std::cout << "fabs(current and down): " << fabs(joint_angles[0].angle.value() - DOWN_POSITION) << std::endl;
+    std::cout << "fabs(current and up): " << fabs(joint_angles[0].angle.value() - UP_POSITION) << std::endl;
+
+    if (fabs(joint_angles[0].angle.value() - DOWN_POSITION) < 0.01)
+        return 1;
+    else if (fabs(joint_angles[0].angle.value() - UP_POSITION) < 0.01)
+        return 2;
+    else
+        return -2;
+}
+

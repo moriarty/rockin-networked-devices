@@ -29,6 +29,14 @@ class DrillingMachine
         bool moveDrillUp();
         bool moveMotor(const float &target_position, const float &max_velocity, const float abort_current);
 
+        /**
+         *
+         * @retval 1    if the motor is in the DOWN position
+         * @retval 2    if the motor is in the UP position
+         * @retval -1   joint angle information are not available
+         * @retval -2   no the motor is none of the above mentioned positions
+         */
+        int getMotorPosition();
 
     private:
         void switchMotorOn();

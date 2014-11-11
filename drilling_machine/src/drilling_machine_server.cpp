@@ -149,7 +149,18 @@ bool DrillingMachineServer::sendStatusMessage(bool is_connected)
     std::string serialized_string;
 
     status_msg.set_is_device_connected(is_connected);
-    //status_msg.set_state(DrillingMachineStatus::); TODO
+
+    if (is_connected)
+    {
+        if(drilling_machine_->isMotorMoving())
+            status_msg.set_state(DrillingMachineStatus::MOVING);
+        else if(drilling_machine_->getMotorPosition() == 1)
+            status_msg.set_state(DrillingMachineStatus::DOWN);
+        else if(drilling_machine_->getMotorPosition() == 2)
+            status_msg.set_state(DrillingMachineStatus::UP);
+        else if(drilling_machine_->getMotorPosition() == -2)
+            status_msg.set_state(DrillingMachineStatus::UNKOWN);
+    }
 
     status_msg.SerializeToString(&serialized_string);
 

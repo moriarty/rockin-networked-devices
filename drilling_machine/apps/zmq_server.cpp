@@ -1,5 +1,4 @@
 #include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "drilling_machine_server.h"
 
@@ -72,8 +71,6 @@ int main(int argc, char *argv[])
     State component_state = INIT_COMMUNICATION;
     DrillingMachineServer server = DrillingMachineServer();
 
-    time_duration time_diff;
-    ptime prev_time_send = microsec_clock::local_time();
     io_service io_srv;
 
     while (true)

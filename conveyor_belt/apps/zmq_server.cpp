@@ -1,6 +1,6 @@
-#include <conveyor_belt_server.h>
 #include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include "conveyor_belt_server.h"
 
 using namespace boost::posix_time;
 using namespace boost::asio;
@@ -60,8 +60,6 @@ int main(int argc, char *argv[])
     State component_state = INIT_COMMUNICATION;
     ConveyorBeltServer server = ConveyorBeltServer();
 
-    time_duration time_diff;
-    ptime prev_time_send = microsec_clock::local_time();
     io_service io_srv;
 
     while (true)

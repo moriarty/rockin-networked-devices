@@ -52,6 +52,10 @@ target_link_libraries(zmq_server
   zmq
   ${Boost_LIBRARIES}
 )
+add_custom_target(setcap ALL
+    COMMAND sudo setcap cap_net_raw+ep ${PROJECT_SOURCE_DIR}/bin/zmq_server
+)
+add_dependencies(setcap zmq_server)
 
 add_executable(zmq_client_function_test
   apps/zmq_client_function_test.cpp

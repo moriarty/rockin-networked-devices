@@ -18,6 +18,11 @@
 class DrillingMachine
 {
     public:
+        enum MotorDirection
+        {
+            MOVING_DOWN = 0, MOVING_UP = 1, NOT_MOVING = 2
+        };
+
         DrillingMachine();
         virtual ~DrillingMachine();
 
@@ -38,7 +43,7 @@ class DrillingMachine
          */
         int getMotorPosition();
 
-        bool isMotorMoving();
+        MotorDirection getMotorDirection();
 
 
     private:

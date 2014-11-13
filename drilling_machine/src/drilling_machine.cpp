@@ -55,12 +55,12 @@ bool DrillingMachine::connect()
 
 bool DrillingMachine::moveDrillDown()
 {
-    return moveMotor((-3.14 * 1.5), (6.28 / 15.0), 2.0);
+    return moveMotor(DOWN_POSITION, (6.28 / 15.0), 2.0);
 }
 
 bool DrillingMachine::moveDrillUp()
 {
-    return moveMotor(-0.1, (6.28 / 10.0 * 2), 0.8);
+    return moveMotor(UP_POSITION, (6.28 / 10.0 * 2), 0.8);
 }
 
 bool DrillingMachine::moveMotor(const float &target_position, const float &max_velocity, const float abort_current)
@@ -100,4 +100,41 @@ void DrillingMachine::switchMotorOn()
 void DrillingMachine::switchMotorOff()
 {
     digitalWrite(1, 0);     // turn GPIO off
+}
+
+int DrillingMachine::getMotorPosition()
+{
+    std::vector<youbot::JointSensedAngle> joint_angles;
+
+    motor_vertical_motion_->getJointData(joint_angles);
+
+    if (joint_angles.size() < 1)
+        return -1;
+
+    std::cout << "fabs(current and down): " << fabs(joint_angles[0].angle.value() - DOWN_POSITION) << std::endl;
+    std::cout << "fabs(current and up): " << fabs(joint_angles[0].angle.value() - UP_POSITION) << std::endl;
+
+    if (fabs(joint_angles[0].angle.value() - DOWN_POSITION) < 0.01)
+        return 1;
+    else if (fabs(joint_angles[0].angle.value() - UP_POSITION) < 0.01)
+        return 2;
+    else
+        return -2;
+}
+
+DrillingMachine::MotorDirection DrillingMachine::getMotorDirection()
+{
+    std::vector<youbot::JointSensedVelocity> joint_velocities;
+
+    motor_vertical_motion_->getJointData(joint_velocities);
+
+    if (joint_velocities.size() < 1)
+        return NOT_MOVING;
+
+    if (joint_velocities[0].angularVelocity.value() > 0)
+        return MOVING_UP;
+    if (joint_velocities[0].angularVelocity.value() < 0)
+        return MOVING_DOWN;
+    else
+        return NOT_MOVING;
 }

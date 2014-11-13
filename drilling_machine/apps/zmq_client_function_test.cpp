@@ -29,18 +29,6 @@ void sendMessage(zmq::socket_t &publisher, DrillingMachineCommand msg)
     delete query;
 }
 
-void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)
-{
-    zmq::message_t zmq_message;
-    DrillingMachineStatus status_msg;
-
-    if (subscriber.recv(&zmq_message, ZMQ_NOBLOCK))
-    {
-        status_msg.ParseFromArray(zmq_message.data(), zmq_message.size());
-        std::cout << "is the device connected: " << status_msg.is_device_connected() << std::endl;
-    }
-}
-
 int main(int argc, char *argv[])
 {
     DrillingMachineCommand command_msg;
@@ -53,16 +41,8 @@ int main(int argc, char *argv[])
     publisher.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
     publisher.bind("tcp://eth0:55512");
 
-    // add subscriber to receive status messages from a client
-    zmq::socket_t subscriber(context, ZMQ_SUB);
-    subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    subscriber.connect("tcp://drilling-machine:55511");
-
-    // give the publisher/subscriber some time to get ready
+    // give the publisher some time to get ready
     sleep(1);
-
-    receiveAndPrintStatusMessage(subscriber);
 
     std::cout << "Moving drilling machine down " << std::flush;
     command_msg = DrillingMachineCommand();
@@ -75,8 +55,6 @@ int main(int argc, char *argv[])
     command_msg.set_command(DrillingMachineCommand::MOVE_UP);
     sendMessage(publisher, command_msg);
     sleep_with_progress(10);
-
-    receiveAndPrintStatusMessage(subscriber);
 
     google::protobuf::ShutdownProtobufLibrary();
 

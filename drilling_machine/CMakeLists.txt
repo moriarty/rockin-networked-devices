@@ -65,3 +65,12 @@ target_link_libraries(zmq_client_function_test
   zmq
   ${PROTOBUF_LIBRARIES}
 )
+
+add_executable(connection_status
+  apps/connection_status.cpp
+  ${PROTO_MESSAGE_SOURCES}
+)
+target_link_libraries(connection_status
+  zmq
+  ${PROTOBUF_LIBRARIES}
+)

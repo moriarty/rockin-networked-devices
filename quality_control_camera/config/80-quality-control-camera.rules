@@ -1,3 +1,3 @@
 # RUN will execute the ZMQ quality control camera server application
 
-SUBSYSTEM=="video4linux", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0772", SYMLINK+="quality_control_camera", MODE="0666", RUN+="/home/pi/rockin-networked-devices/quality_control_camera/scripts/zmq_server.sh"
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="075d", SYMLINK+="quality_control_camera", MODE="0666", RUN+="/home/pi/rockin-networked-devices/quality_control_camera/scripts/zmq_server.sh"

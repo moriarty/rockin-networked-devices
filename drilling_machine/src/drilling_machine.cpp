@@ -68,7 +68,13 @@ bool DrillingMachine::moveMotor(const float &target_position, const float &max_v
     if (motor_vertical_motion_ == NULL)
         return false;
 
-    motor_vertical_motion_->softCloseThread(target_position, max_velocity, abort_current);
+    try
+    {
+        motor_vertical_motion_->softCloseThread(target_position, max_velocity, abort_current);
+    } catch (...)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -86,10 +92,20 @@ void DrillingMachine::disconnect()
 
 bool DrillingMachine::isConnected()
 {
+    bool is_connected = false;
+
     if (motor_vertical_motion_ == NULL)
         return false;
 
-    return youbot::EthercatMaster::getInstance().isEtherCATConnectionEstablished();
+    try
+    {
+        is_connected = youbot::EthercatMaster::getInstance().isEtherCATConnectionEstablished();
+    } catch (...)
+    {
+        return false;
+    }
+
+    return is_connected;
 }
 
 void DrillingMachine::switchMotorOn()
@@ -106,7 +122,13 @@ int DrillingMachine::getMotorPosition()
 {
     std::vector<youbot::JointSensedAngle> joint_angles;
 
-    motor_vertical_motion_->getJointData(joint_angles);
+    try
+    {
+        motor_vertical_motion_->getJointData(joint_angles);
+    } catch (...)
+    {
+        return -1;
+    }
 
     if (joint_angles.size() < 1)
         return -1;
@@ -123,7 +145,13 @@ DrillingMachine::MotorDirection DrillingMachine::getMotorDirection()
 {
     std::vector<youbot::JointSensedVelocity> joint_velocities;
 
-    motor_vertical_motion_->getJointData(joint_velocities);
+    try
+    {
+        motor_vertical_motion_->getJointData(joint_velocities);
+    } catch (...)
+    {
+        return -1;
+    }
 
     if (joint_velocities.size() < 1)
         return NOT_MOVING;

@@ -137,7 +137,7 @@ DrillingMachine::MotorDirection DrillingMachine::getMotorDirection()
 
     if (joint_velocities[0].angularVelocity.value() > 0)
         return MOVING_UP;
-    if (joint_velocities[0].angularVelocity.value() < 0)
+    else if (joint_velocities[0].angularVelocity.value() < 0)
         return MOVING_DOWN;
     else
         return NOT_MOVING;

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    subscriber.connect("tcp://drilling-machine:55511");
+    subscriber.connect("tcp://192.168.1.103:55511");
 
     while(true)
     {

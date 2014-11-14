@@ -24,7 +24,7 @@ State initializeCommunication(State &component_state, DrillingMachineServer &ser
         return INIT_COMMUNICATION;
     }
 
-    if (!server.startSubscriber("ref-box", 55512))
+    if (!server.startSubscriber("192.168.1.100", 55512))
     {
         server.stopPublisher();
         sleep(1);   // try only every second to initialize the connection

@@ -128,12 +128,8 @@ DrillingMachine::MotorDirection DrillingMachine::getMotorDirection()
 
     motor_vertical_motion_->getJointData(joint_velocities);
 
-    std::cout << "joint size: " << joint_velocities.size() << std::endl;
-
     if (joint_velocities.size() < 1)
         return NOT_MOVING;
-
-    std::cout << "joint vel: " << joint_velocities[0].angularVelocity.value() << std::endl;
 
     if (joint_velocities[0].angularVelocity.value() > 0)
         return MOVING_UP;

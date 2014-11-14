@@ -1,0 +1,4 @@
+# RUN will execute the ZMQ drilling machine server application
+
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:50:b6:12:9d:7d", RUN+="/home/pi/rockin-networked-devices/drilling_machine/scripts/zmq_server.sh"
+

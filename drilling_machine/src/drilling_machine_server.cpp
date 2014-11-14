@@ -154,7 +154,7 @@ bool DrillingMachineServer::sendStatusMessage(bool is_connected)
     {
         if(drilling_machine_->getMotorDirection() == DrillingMachine::MOVING_DOWN)
             status_msg.set_state(DrillingMachineStatus::MOVING_DOWN);
-        if(drilling_machine_->getMotorDirection() == DrillingMachine::MOVING_UP)
+        else if(drilling_machine_->getMotorDirection() == DrillingMachine::MOVING_UP)
             status_msg.set_state(DrillingMachineStatus::MOVING_UP);
         else if(drilling_machine_->getMotorPosition() == 1)
             status_msg.set_state(DrillingMachineStatus::AT_BOTTOM);

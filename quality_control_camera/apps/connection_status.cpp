@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    subscriber.connect("tcp://quality-control-camera:55521");
+    subscriber.connect("tcp://192.168.1.102:55521");
 
     while (true)
     {

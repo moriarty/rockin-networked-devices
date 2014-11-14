@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     uint64_t hwm = 1;
 
     zmq::socket_t service(context, ZMQ_REQ);
-    service.connect("tcp://quality-control-camera:55522");
+    service.connect("tcp://192.168.1.102:55522");
 
     // give the publisher/subscriber some time to get ready
     sleep(1);

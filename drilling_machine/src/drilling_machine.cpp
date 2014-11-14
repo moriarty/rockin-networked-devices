@@ -111,9 +111,6 @@ int DrillingMachine::getMotorPosition()
     if (joint_angles.size() < 1)
         return -1;
 
-    std::cout << "fabs(current and down): " << fabs(joint_angles[0].angle.value() - DOWN_POSITION) << std::endl;
-    std::cout << "fabs(current and up): " << fabs(joint_angles[0].angle.value() - UP_POSITION) << std::endl;
-
     if (fabs(joint_angles[0].angle.value() - DOWN_POSITION) < 0.01)
         return 1;
     else if (fabs(joint_angles[0].angle.value() - UP_POSITION) < 0.01)

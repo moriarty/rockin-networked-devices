@@ -161,7 +161,7 @@ bool DrillingMachineServer::sendStatusMessage(bool is_connected)
         else if(drilling_machine_->getMotorPosition() == 2)
             status_msg.set_state(DrillingMachineStatus::AT_TOP);
         else
-            status_msg.set_state(DrillingMachineStatus::UNKOWN);
+            status_msg.set_state(DrillingMachineStatus::UNKNOWN);
     }
 
     status_msg.SerializeToString(&serialized_string);

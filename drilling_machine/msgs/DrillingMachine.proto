@@ -17,7 +17,7 @@ message DrillingMachineStatus
 		AT_BOTTOM = 1;
 		MOVING_UP = 2;
 		MOVING_DOWN = 3;
-		UNKOWN = 4;
+		UNKNOWN = 4;
 	}
 
 	required bool is_device_connected = 1;

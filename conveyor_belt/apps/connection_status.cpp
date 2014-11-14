@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     zmq::socket_t subscriber(context, ZMQ_SUB);
     subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
     subscriber.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    subscriber.connect("tcp://conveyor-belt:55501");
+    subscriber.connect("tcp://192.168.1.101:55501");
 
     while(true)
     {

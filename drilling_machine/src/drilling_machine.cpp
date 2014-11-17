@@ -150,7 +150,7 @@ DrillingMachine::MotorDirection DrillingMachine::getMotorDirection()
         motor_vertical_motion_->getJointData(joint_velocities);
     } catch (...)
     {
-        return -1;
+        return NOT_MOVING;
     }
 
     if (joint_velocities.size() < 1)

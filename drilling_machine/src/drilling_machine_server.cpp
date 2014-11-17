@@ -14,6 +14,8 @@ DrillingMachineServer::DrillingMachineServer() :
     zmq_context_ = new zmq::context_t(1);
 
     drilling_machine_ = new DrillingMachine();
+
+    last_processed_msg_time_ = boost::posix_time::microsec_clock::local_time();
 }
 
 DrillingMachineServer::~DrillingMachineServer()
@@ -111,6 +113,7 @@ int DrillingMachineServer::checkAndProcessRequests()
     zmq::message_t zmq_request;
     DrillingMachineCommand machine_command;
     std::string serialized_string;
+    boost::posix_time::time_duration time_diff;
 
     if (!drilling_machine_->isConnected())
         return -4;
@@ -124,6 +127,11 @@ int DrillingMachineServer::checkAndProcessRequests()
             return -2;
     }
 
+    time_diff = boost::posix_time::microsec_clock::local_time() - last_processed_msg_time_;
+
+    if (time_diff.total_seconds() < 1)
+        return -1;
+
     // check if the correct message type was received
     if (!machine_command.ParseFromArray(zmq_request.data(), zmq_request.size()))
         return -3;
@@ -134,6 +142,8 @@ int DrillingMachineServer::checkAndProcessRequests()
         drilling_machine_->moveDrillUp();
     else
         return -5;
+
+    last_processed_msg_time_ = boost::posix_time::microsec_clock::local_time();
 
     return 0;
 }

@@ -9,6 +9,7 @@
 #define DRILLING_MACHINE_SERVER_H_
 
 #include <boost/lexical_cast.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <zmq.hpp>
 
 #include "drilling_machine.h"
@@ -109,6 +110,8 @@ class DrillingMachineServer
         zmq::socket_t *zmq_publisher_;
         zmq::socket_t *zmq_subscriber_;
         bool is_zmq_communication_initalized_;
+
+        boost::posix_time::ptime last_processed_msg_time_;
 };
 
 #endif /* DRILLING_MACHINE_SERVER_H_ */

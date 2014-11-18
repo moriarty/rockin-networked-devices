@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <DrillingMachine.pb.h>
+#include <DeviceDrillingMachine.pb.h>
 
 void sleep_with_progress(unsigned int seconds)
 {

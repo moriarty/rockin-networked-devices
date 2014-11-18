@@ -15,7 +15,7 @@
 #include "drilling_machine.h"
 
 // Protobuf message headers
-#include <DrillingMachine.pb.h>
+#include <DeviceDrillingMachine.pb.h>
 
 class DrillingMachineServer
 {

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <DrillingMachine.pb.h>
+#include <DeviceDrillingMachine.pb.h>
 
 void receiveAndPrintStatusMessage(zmq::socket_t &subscriber)
 {

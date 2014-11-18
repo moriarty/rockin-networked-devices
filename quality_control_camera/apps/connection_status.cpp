@@ -1,5 +1,6 @@
 #include <iostream>
 #include <zmq.hpp>
+#include <Image.pb.h>
 #include <Camera.pb.h>
 #include <stdio.h>
 #include <unistd.h>

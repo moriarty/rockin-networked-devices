@@ -1,6 +1,6 @@
 #include <iostream>
 #include <zmq.hpp>
-#include <ConveyorBelt.pb.h>
+#include <DeviceConveyorBelt.pb.h>
 #include <stdio.h>
 #include <unistd.h>
 

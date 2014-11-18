@@ -1,7 +1,7 @@
 #include <iostream>
 #include <zmq.hpp>
-#include <Image.pb.h>
-#include <Camera.pb.h>
+#include <DeviceImage.pb.h>
+#include <DeviceCamera.pb.h>
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <unistd.h>

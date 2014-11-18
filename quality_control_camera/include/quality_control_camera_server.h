@@ -14,8 +14,8 @@
 #include "camera.h"
 
 // Protobuf message headers
-#include <Image.pb.h>
-#include <Camera.pb.h>
+#include <DeviceImage.pb.h>
+#include <DeviceCamera.pb.h>
 
 class QualityControlCameraServer
 {

@@ -106,8 +106,8 @@ int QualityControlCameraServer::checkAndProcessRequests()
 {
     cv::Mat image;
     zmq::message_t zmq_request;
-    CameraImageRequest img_request_msg;
-    CameraImage img_msg;
+    ImageRequest img_request_msg;
+    Image img_msg;
     std::string serialized_string;
 
     if (!camera_->isConnected())
@@ -153,7 +153,7 @@ int QualityControlCameraServer::checkAndProcessRequests()
     return 0;
 }
 
-void QualityControlCameraServer::packImageIntoMessage(const cv::Mat &image, CameraImage &img_msg)
+void QualityControlCameraServer::packImageIntoMessage(const cv::Mat &image, Image &img_msg)
 {
     img_msg.set_width(image.cols);
     img_msg.set_height(image.rows);
@@ -191,7 +191,7 @@ bool QualityControlCameraServer::sendStatusMessage(bool is_connected)
 
 bool QualityControlCameraServer::sendEmptyImage()
 {
-    CameraImage img_msg;
+    Image img_msg;
     std::string serialized_string;
 
     img_msg.set_height(0);

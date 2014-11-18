@@ -14,7 +14,7 @@
 #include "camera.h"
 
 // Protobuf message headers
-#include <CameraImage.pb.h>
+#include <Image.pb.h>
 #include <Camera.pb.h>
 
 class QualityControlCameraServer
@@ -101,7 +101,7 @@ class QualityControlCameraServer
         bool sendStatusMessage(bool is_connected);
 
     private:
-        void packImageIntoMessage(const cv::Mat &image, CameraImage &img_msg);
+        void packImageIntoMessage(const cv::Mat &image, Image &img_msg);
 
         /**
          * sends an empty image as a reply to a request

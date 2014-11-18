@@ -1,8 +1,8 @@
-message CameraImageRequest
+message ImageRequest
 {
 }
 
-message CameraImage
+message Image
 {
     required uint32 height = 1;
     required uint32 width = 2;

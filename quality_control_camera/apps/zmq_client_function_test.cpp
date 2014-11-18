@@ -1,12 +1,12 @@
 #include <iostream>
 #include <zmq.hpp>
-#include <CameraImage.pb.h>
+#include <Image.pb.h>
 #include <Camera.pb.h>
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <unistd.h>
 
-void sendRequest(zmq::socket_t &service, CameraImageRequest msg)
+void sendRequest(zmq::socket_t &service, ImageRequest msg)
 {
     std::string serialized_string;
 
@@ -22,8 +22,8 @@ void sendRequest(zmq::socket_t &service, CameraImageRequest msg)
 
 int main(int argc, char *argv[])
 {
-    CameraImageRequest image_request_msg;
-    CameraImage image_msg;
+    ImageRequest image_request_msg;
+    Image image_msg;
 
     cv::namedWindow("Received Image", cv::WINDOW_AUTOSIZE);
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     for (unsigned int i = 0; i < 20; i++)
     {
-        image_request_msg = CameraImageRequest();
+        image_request_msg = ImageRequest();
         sendRequest(service, image_request_msg);
 
         if (service.recv(&request) && image_msg.ParseFromArray(request.data(), request.size()))

@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        // the main loop runs every 20ms (i.e. check for incoming data)
+        // the main loop runs with 20Hz (i.e. check for incoming data)
         deadline_timer loop_timer(io_srv, milliseconds(50));
 
         switch (component_state)

@@ -98,11 +98,13 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
 {
     std::bitset<16> register_value(0);
 
-    if (motor_direction != FORWARD && motor_direction != REVERSE)
-        return -1;
-
     // set the direction bit
-    register_value.set(1, motor_direction);
+    if (motor_direction == FORWARD)
+        register_value.set(1, 0);
+    else if (motor_direction == REVERSE)
+        register_value.set(1, 1);
+    else
+        return -1;
 
     // set run mode to start
     register_value.set(0, true);

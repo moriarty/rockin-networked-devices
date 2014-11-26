@@ -6,6 +6,8 @@
  */
 
 #include <quality_control_camera_server.h>
+#include <vector>
+#include <opencv2/highgui/highgui_c.h>
 
 QualityControlCameraServer::QualityControlCameraServer() :
         zmq_context_(NULL), zmq_publisher_(NULL), zmq_service_(NULL), default_camera_device_id_(0), is_zmq_communication_initalized_(false)
@@ -107,7 +109,7 @@ int QualityControlCameraServer::checkAndProcessRequests()
     cv::Mat image;
     zmq::message_t zmq_request;
     ImageRequest img_request_msg;
-    Image img_msg;
+    CompressedImage img_msg;
     std::string serialized_string;
 
     if (!camera_->isConnected())
@@ -153,13 +155,27 @@ int QualityControlCameraServer::checkAndProcessRequests()
     return 0;
 }
 
-void QualityControlCameraServer::packImageIntoMessage(const cv::Mat &image, Image &img_msg)
+void QualityControlCameraServer::packImageIntoMessage(const cv::Mat &image, CompressedImage &img_msg)
 {
-    img_msg.set_width(image.cols);
-    img_msg.set_height(image.rows);
-    img_msg.set_encoding(16);
-    img_msg.set_step(image.cols * image.elemSize());
-    img_msg.set_data(image.data, image.rows * image.cols * image.elemSize());
+    std::vector<uchar> buf;
+    std::stringstream sstr;
+    std::vector<int> params;
+    std::string comprType = ".jpg";
+    int compr = cv::IMWRITE_JPEG_QUALITY;
+    int quality = 50;
+
+    params.push_back(compr);
+    params.push_back(quality); // Quality of compression
+
+    cv::imencode(comprType, image, buf, params);
+
+    for(size_t i = 0; i < buf.size(); i++)
+    {
+        sstr << buf[i];
+    }
+
+    img_msg.set_format("jpg");
+    img_msg.set_data(sstr.str());
 }
 
 bool QualityControlCameraServer::sendStatusMessage()
@@ -191,13 +207,10 @@ bool QualityControlCameraServer::sendStatusMessage(bool is_connected)
 
 bool QualityControlCameraServer::sendEmptyImage()
 {
-    Image img_msg;
+    CompressedImage img_msg;
     std::string serialized_string;
 
-    img_msg.set_height(0);
-    img_msg.set_width(0);
-    img_msg.set_encoding(0);
-    img_msg.set_step(0);
+    img_msg.set_format("");
 
     const char d = ' ';
     img_msg.set_data(&d);

@@ -1,2 +1,2 @@
 #!/bin/bash
-/home/pi/rockin-networked-devices/conveyor_belt/bin/zmq_server &
+/home/rockin/rockin-networked-devices/conveyor_belt/bin/zmq_server &

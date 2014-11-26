@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
     zmq::socket_t publisher(context, ZMQ_PUB);
     publisher.setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
-    publisher.bind("tcp://eth0:55502");
+    publisher.bind("tcp://127.0.0.1:55502");
 
     // give the publisher some time to get ready
     sleep(1);

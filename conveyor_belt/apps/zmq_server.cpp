@@ -31,13 +31,13 @@ State initializeCommunication(State &component_state, ConveyorBeltServer &server
         server.stopSubscriber();
     }
 
-    if (!server.startPublisher("eth0", 55501))
+    if (!server.startPublisher("127.0.0.1", 55501))
     {
         sleep(1);   // try only every second to initialize the connection
         return INIT_COMMUNICATION;
     }
 
-    if (!server.startSubscriber("192.168.1.100", 55502))
+    if (!server.startSubscriber("127.0.0.1", 55502))
     {
         server.stopPublisher();
         sleep(1);   // try only every second to initialize the connection

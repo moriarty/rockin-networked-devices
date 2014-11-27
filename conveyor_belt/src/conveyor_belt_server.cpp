@@ -58,6 +58,12 @@ void ConveyorBeltServer::stopPublisher()
 {
     isZmqCommunicationInitalized_ = false;
     zmq_publisher_->close();
+    
+    if (zmq_publisher_ != NULL)
+    {
+        delete zmq_publisher_;
+        zmq_publisher_ = NULL;
+    }
 }
 
 bool ConveyorBeltServer::startSubscriber(const std::string ip_address, const unsigned int command_msg_port)
@@ -85,6 +91,12 @@ void ConveyorBeltServer::stopSubscriber()
 {
     isZmqCommunicationInitalized_ = false;
     zmq_subscriber_->close();
+ 
+    if (zmq_subscriber_ != NULL)
+    {
+        delete zmq_subscriber_;
+        zmq_subscriber_ = NULL;
+    }
 }
 
 bool ConveyorBeltServer::isCommunctionInitialized()

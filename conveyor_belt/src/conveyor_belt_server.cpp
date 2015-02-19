@@ -42,7 +42,8 @@ bool ConveyorBeltServer::startPublisher(const std::string ip_address, const unsi
     try
     {
         zmq_publisher_ = new zmq::socket_t(*zmq_context_, ZMQ_PUB);
-        zmq_publisher_->setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
+        zmq_publisher_->setsockopt(ZMQ_SNDHWM, &hwm, sizeof(hwm));
+        zmq_publisher_->setsockopt(ZMQ_RCVHWM, &hwm, sizeof(hwm));
 
         zmq_publisher_->bind(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(status_msg_port)).c_str());
         isZmqCommunicationInitalized_ = true;
@@ -69,7 +70,8 @@ bool ConveyorBeltServer::startSubscriber(const std::string ip_address, const uns
     {
         zmq_subscriber_ = new zmq::socket_t(*zmq_context_, ZMQ_SUB);
         zmq_subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0);
-        zmq_subscriber_->setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
+        zmq_subscriber_->setsockopt(ZMQ_SNDHWM, &hwm, sizeof(hwm));
+        zmq_subscriber_->setsockopt(ZMQ_RCVHWM, &hwm, sizeof(hwm));
 
         zmq_subscriber_->connect(std::string("tcp://" + ip_address + ":" + boost::lexical_cast<std::string>(command_msg_port)).c_str());
         isZmqCommunicationInitalized_ = true;

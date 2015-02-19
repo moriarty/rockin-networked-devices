@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include <conveyor_belt_kf_d44.h>
 
 void sleep_with_progress(unsigned int seconds)

@@ -15,6 +15,9 @@
 #include <boost/units/systems/si/frequency.hpp>
 #include <modbus/modbus.h>
 
+#include <stdio.h>
+#include <cerrno>
+
 #define WAIT_TIME_WRITE_PARAMETERS_IN_MS        200     // in milliseconds; Parameter H5-11 is set to "1" (see p. 408 of Yaskawa V100 documentation)
 #define WAIT_TIME_CONTROL_COMMAND_IN_MS         5       // in milliseconds
 #define WAIT_TIME_READ_PARAMETERS_IN_MS         5       // in milliseconds

@@ -27,22 +27,78 @@ int main(int argc, char *argv[])
 
     std::cout << "Set maximum belt velocity (75Hz)" << std::endl;
     belt->setFrequency(boost::units::quantity<boost::units::si::frequency>(75 * boost::units::si::hertz));
-
+/**
     std::cout << "Moving the belt in FORWARD direction for 5 seconds " << std::flush;
+    std::cout << "####################" << std::endl;
     belt->start(ConveyorBeltKfD44::FORWARD);
-    sleep_with_progress(5);
-
+    for( int i = 0; i < 5; i++){
+	std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+    	sleep_with_progress(1);
+    }	
+    
     std::cout << "Set belt velocity to (30Hz) and continue moving for 5 seconds" << std::flush;
     belt->setFrequency(boost::units::quantity<boost::units::si::frequency>(30 * boost::units::si::hertz));
-    sleep_with_progress(5);
+    std::cout << "####################" << std::endl;
+    for( int i = 0; i < 5; i++){
+        std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+        sleep_with_progress(1);
+    }
+    //sleep_with_progress(5);
+
 
     std::cout << "Moving the belt in REVERSE direction for 5 seconds " << std::flush;
     belt->start(ConveyorBeltKfD44::REVERSE);
-    sleep_with_progress(5);
+    std::cout << "####################" << std::endl;
+    for( int i = 0; i < 5; i++){
+        std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+        sleep_with_progress(1);
+    }
+    //sleep_with_progress(5);
 
     std::cout << "Stopping the belt" << std::endl;
     belt->stop();
+    std::cout << "####################" << std::endl;
+    for( int i = 0; i < 5; i++){
+        std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+        sleep_with_progress(1);
+    }
+    
+**/
+    std::cout << "Stopping the belt" << std::endl;
+    belt->stop();
+    std::cout << "####################" << std::endl;
 
+    for( int i = 0; i < 10; i++){
+        std::cout << "####################" << std::endl;
+
+        if (i%2 == 0){
+            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+            
+            std::cout << "Stopping the belt" << std::endl;
+            belt->stop();
+
+            sleep_with_progress(1);
+
+            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+	    
+        } else {
+            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+
+            std::cout << "Starting the belt" << std::endl;
+            belt->start(ConveyorBeltKfD44::REVERSE);
+
+            sleep_with_progress(1);
+
+            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+	}
+    }
+
+    
+
+
+    std::cout << "Stopping the belt" << std::endl;
+    belt->stop();
+    std::cout << "####################" << std::endl;
     delete belt;
 
     return 0;

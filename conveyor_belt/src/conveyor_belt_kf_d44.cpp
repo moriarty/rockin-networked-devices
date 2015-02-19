@@ -59,6 +59,14 @@ int ConveyorBeltKfD44::connect(const std::string device_name)
 
     setDefaultParameters();
 
+    struct timeval old_response_timeout;
+    struct timeval new_response_timeout;
+    modbus_get_response_timeout(modbus_rtu_contex_, &old_response_timeout);
+    new_response_timeout.tv_sec = 10;
+    new_response_timeout.tv_usec = 0;
+    modbus_set_response_timeout(modbus_rtu_contex_, &new_response_timeout);
+    fprintf(stderr, "!!!!!!%ld, %ld\n", old_response_timeout.tv_sec, old_response_timeout.tv_usec);
+
     return 0;
 }
 
@@ -84,7 +92,14 @@ bool ConveyorBeltKfD44::is_connected()
 
     // check if status register can be read
     uint16_t current_register_value[1];
-    if (modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, current_register_value) == 1)
+
+    //
+    int rc;
+    rc = modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, current_register_value);
+    if (rc == -1) {
+	fprintf(stderr, "ERROR: %s\n", modbus_strerror(errno));
+	return -1;
+    } else
     {
         usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
         return true;
@@ -108,7 +123,14 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
     register_value.set(0, true);
 
     // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong())) == 1)
+    int rc;
+    rc = modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong()));
+    fprintf(stderr, "%d\n", rc);
+    if (rc == -1){
+        fprintf(stderr, "ERROR: %s\n", modbus_strerror(errno));
+        fprintf(stderr, "Unable to start");
+	return -1;
+    } else 
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         run_state = STARTED;
@@ -122,11 +144,18 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
 bool ConveyorBeltKfD44::stop()
 {
     // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00) == 1)
+    //
+    int rc;
+    rc = modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00);
+    if (rc == -1) {
+        fprintf(stderr, "ERROR: %s\n", modbus_strerror(errno));
+	fprintf(stderr, "Unable to stop");
+        return -1;
+    } else
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         run_state = STOPPED;
-        return true;
+	return true;
     }
     usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
 
@@ -138,7 +167,14 @@ bool ConveyorBeltKfD44::setFrequency(const quantity<si::frequency> desired_frequ
     int transformed_frequency = static_cast<int>((desired_frequency.value() * 100)) ;
 
     // write the frequency in to the respective register
-    if (modbus_write_register(modbus_rtu_contex_, 0x0002, transformed_frequency) == 1)
+    //
+    int rc;
+    rc = modbus_write_register(modbus_rtu_contex_, 0x0002, transformed_frequency);
+    if (rc == -1) {
+        fprintf(stderr, "ERROR: %s\n", modbus_strerror(errno));
+	fprintf(stderr, "Set Freqiency Error");
+        return -1;
+    } else
     {
         usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
         return true;

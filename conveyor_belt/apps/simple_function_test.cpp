@@ -68,20 +68,35 @@ int main(int argc, char *argv[])
     belt->stop();
     std::cout << "####################" << std::endl;
 
-    for( int i = 0; i < 10; i++){
+    //ConveyorBeltKfD44::RunMode curr_mode;
+    //ConveyorBeltKfD44::RunMode new_mode;
+    //int curr_mode;
+    //int new_mode;
+
+    const int total_count = 1000;
+    int error_count = 0;
+    int start_error = 0;
+    int stop_error = 0;
+
+    for( int i = 0; i < total_count; i++){
         std::cout << "####################" << std::endl;
 
         if (i%2 == 0){
-            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+	    //curr_mode = belt->getRunState();
+	    std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
             
             std::cout << "Stopping the belt" << std::endl;
             belt->stop();
 
             sleep_with_progress(1);
-
-            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
 	    
+	    //new_mode = belt->getRunState();
+            std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+        
+	
+    
         } else {
+	    //curr_mode = belt->getRunState();
             std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
 
             std::cout << "Starting the belt" << std::endl;
@@ -89,9 +104,21 @@ int main(int argc, char *argv[])
 
             sleep_with_progress(1);
 
+	    //new_mode = belt->getRunState();
             std::cout << "RUN STATE: " << belt->getRunState() << std::endl;
+        /*
+	if (curr_mode == new_mode){
+            std::cout << "!!!! ERROR !!!!" << std::endl;
+            error_count++;
+            start_error++;
+        }
+	*/
+
 	}
+
     }
+    
+    std::cout << "\nSUMMARY\nRUNS:\t" << total_count << "\nERRORS:\t" << error_count << std::endl;
 
     
 

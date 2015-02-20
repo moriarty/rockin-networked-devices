@@ -7,6 +7,10 @@
 
 #include "conveyor_belt_kf_d44.h"
 
+int timeout_errors_g = 0;
+int crc_errors_g = 0;
+int other_errors_g = 0;
+
 ConveyorBeltKfD44::ConveyorBeltKfD44() :
         modbus_rtu_contex_(NULL), run_state(STOPPED)
 {
@@ -22,6 +26,13 @@ ConveyorBeltKfD44::ConveyorBeltKfD44() :
 
 ConveyorBeltKfD44::~ConveyorBeltKfD44()
 {
+    //fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!\n");
+    //fprintf(stderr, "!! specific errors \ntimeout:\t%d\ncrc:\t%d\n", timeout_errors_g, crc_errors_g);
+    //fprintf(stderr, "other error no:\t%d", other_errors_g);
+    std::cout << "!!!!!!!!!!!!!!!!!!" << std::endl;	
+    std::cout << "!! Specific libmodbus errors:\n!! Timeout:\t" << timeout_errors_g << std::endl;
+    std::cout << "!! CRC Errors:\t" << crc_errors_g << std::endl;
+    std::cout << "!! Other Errors:\t" << other_errors_g << "\n!!!!!!!!!!!!!" << std::endl;
     disconnect();
 }
 
@@ -104,9 +115,9 @@ bool ConveyorBeltKfD44::is_connected()
         usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
         return true;
     }
-    usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
+    //usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
 
-    return false;
+    //return false;
 }
 
 int ConveyorBeltKfD44::start(Direction motor_direction)
@@ -124,42 +135,128 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
 
     // write the values to the register
     int rc;
-    rc = modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong()));
-    fprintf(stderr, "%d\n", rc);
-    if (rc == -1){
-        fprintf(stderr, "ERROR: %s\n", modbus_strerror(errno));
-        fprintf(stderr, "Unable to start");
-	return -1;
-    } else 
     {
-        usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
-        run_state = STARTED;
-        return 0;
+    uint16_t tab_reg[64];
+
+    rc = modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, tab_reg);
+    usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
+
+    if (rc == -1){
+    	fprintf(stderr, "%s\n", modbus_strerror(errno));
+        return -1;
     }
+    for(int i=0; i < rc; i++){
+    	printf("READ:\nreg[%d]=%d (0x%X)\n", i, tab_reg[i], tab_reg[i]);
+    }
+    }
+
+    rc = modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong()));
     usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
 
-    return -2;
+    fprintf(stderr, "TRY WRITE:\nrc = %d\treg_val=%d\n", rc, (int)register_value.to_ulong());
+    if (rc == -1){
+	/*
+	if (errno == 112345690){
+		crc_errors_g++;
+	} else if (errno == 110){
+		timeout_errors_g++;
+	} else {
+		other_errors_g++;
+	}
+	*/
+        fprintf(stderr, "%s\n", modbus_strerror(errno));
+	return -1;
+    } //else 
+    //{
+     	uint16_t tab_reg[64];
+        rc = modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, tab_reg);
+	usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
+
+	if (rc == -1){
+		fprintf(stderr, "%s\n", modbus_strerror(errno));
+		return -1;
+	} else {
+	    printf("READ:\nreg[%d]=%d (0x%X)\n", 0, tab_reg[0], tab_reg[0]);
+
+	    if (tab_reg[0] == 3 ){
+		run_state = STARTED;
+		return 0;
+	    }
+	} 
+	/*
+	for(int i=0; i < rc; i++){
+		printf("READ:\nreg[%d]=%d (0x%X)\n", i, tab_reg[i], tab_reg[i]);
+	}
+	run_state = STARTED;
+	*/
+        return -1;
+    //}
+    //usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+
+    //return -2;
 }
 
 bool ConveyorBeltKfD44::stop()
 {
-    // write the values to the register
-    //
-    int rc;
-    rc = modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00);
-    if (rc == -1) {
-        fprintf(stderr, "ERROR: %s\n", modbus_strerror(errno));
-	fprintf(stderr, "Unable to stop");
-        return -1;
-    } else
-    {
-        usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
-        run_state = STOPPED;
-	return true;
-    }
-    usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
 
-    return false;
+
+    // register count
+    int rc;
+
+    // DEBUGGING read the values from register
+    {
+    uint16_t tab_reg[64];
+    rc = modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, tab_reg);
+    usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
+
+    if (rc == -1){
+    	fprintf(stderr, "%s\n", modbus_strerror(errno));
+        return -1;
+    }
+    for(int i=0; i < rc; i++){
+    	printf("READ:\nreg[%d]=%d (0x%X)\n", i, tab_reg[i], tab_reg[i]);
+    }
+    }
+
+    // write the values to the register
+    rc = modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00);
+    usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+    
+    fprintf(stderr, "TRY WRITE:\nrc = %d\treg_val=%d\n", rc, (int) 0x00);
+    if (rc == -1) {
+	/*
+        if (errno == 112345690){
+                crc_errors_g++;
+        } else if (errno == 110){
+                timeout_errors_g++;
+        } else {
+                other_errors_g++;
+        }
+	*/
+	fprintf(stderr, "%s\n", modbus_strerror(errno));
+        return -1;
+    } 
+	//else
+    //{
+	// DEBUGGING read the values from register
+	uint16_t tab_reg[64];
+        rc = modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, tab_reg);
+	usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
+	
+	if (rc == -1){
+		fprintf(stderr, "%s\n", modbus_strerror(errno));
+		return -1;
+	} else {
+	    //for(int i=0; i < rc; i++){
+	    printf("READ:\nreg[%d]=%d (0x%X)\n", 0, tab_reg[0], tab_reg[0]);
+
+	    if (tab_reg[0] == 0) {
+	        run_state = STOPPED;
+		return true;
+	    }
+	}
+        return false;
+    //}
 }
 
 bool ConveyorBeltKfD44::setFrequency(const quantity<si::frequency> desired_frequency)

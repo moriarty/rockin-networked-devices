@@ -19,4 +19,16 @@ Conveyor Belt Control
 
 ## Arch Linux
 
-   sudo pacman -S 
+    sudo pacman -S cmake protobuf boost zeromq
+   
+And from the AUR: libmodbus
+
+    sudo aura -A libmodbus
+
+## Build & Install
+
+    mkdir ./build
+    cd ./build 
+    cmake ..
+    make
+    

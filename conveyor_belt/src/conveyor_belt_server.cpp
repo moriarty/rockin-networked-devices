@@ -36,7 +36,7 @@ bool ConveyorBeltServer::connectConveyorBelt(std::string device_name)
 
 bool ConveyorBeltServer::startPublisher(const std::string ip_address, const unsigned int status_msg_port)
 {
-    uint64_t hwm = 1;
+    more_t hwm = 1;
 
     // add publisher to send status messages
     try
@@ -63,7 +63,7 @@ void ConveyorBeltServer::stopPublisher()
 
 bool ConveyorBeltServer::startSubscriber(const std::string ip_address, const unsigned int command_msg_port)
 {
-    uint64_t hwm = 1;
+    more_t hwm = 1;
 
     // add subscriber to receive command messages from a client
     try

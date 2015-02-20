@@ -16,7 +16,7 @@
 #   define zmq_msg_send(msg,sock,opt) zmq_send (sock, msg, opt)
 #   define zmq_msg_recv(msg,sock,opt) zmq_recv (sock, msg, opt)
 #   define ZMQ_POLL_MSEC    1000        //  zmq_poll is usec
-#elif ZMQ_VERSION_MAJOR == 3
+#elif ZMQ_VERSION_MAJOR >= 3
 #   define more_t int
 #   define ZMQ_POLL_MSEC    1           //  zmq_poll is msec
 #endif
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 {
     zmq::context_t context(1);
 
-    uint64_t hwm = 1;
+    more_t hwm = 1;
 
     // add subscriber to receive status messages from a the conveyor belt
     zmq::socket_t subscriber(context, ZMQ_SUB);

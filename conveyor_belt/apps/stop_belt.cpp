@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    int result;
+/*    int result;
     ConveyorBeltKfD44::RunMode run_state;
 
     do {
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         std::cout << result << std::endl;
         run_state = belt->getRunState();
     } while (run_state == 1);
-    
+*/    
     delete belt;
 
     return 0;

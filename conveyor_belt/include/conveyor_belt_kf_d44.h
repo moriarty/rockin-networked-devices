@@ -14,10 +14,11 @@
 #include <boost/units/io.hpp>
 #include <boost/units/systems/si/frequency.hpp>
 #include <modbus/modbus.h>
+#include <cerrno>
 
-#define WAIT_TIME_WRITE_PARAMETERS_IN_MS        200     // in milliseconds; Parameter H5-11 is set to "1" (see p. 408 of Yaskawa V100 documentation)
-#define WAIT_TIME_CONTROL_COMMAND_IN_MS         5       // in milliseconds
-#define WAIT_TIME_READ_PARAMETERS_IN_MS         5       // in milliseconds
+#define WAIT_TIME_WRITE_PARAMETERS_IN_MS        500     // in milliseconds; Parameter H5-11 is set to "1" (see p. 408 of Yaskawa V100 documentation)
+#define WAIT_TIME_CONTROL_COMMAND_IN_MS         100       // in milliseconds
+#define WAIT_TIME_READ_PARAMETERS_IN_MS         100       // in milliseconds
 
 using namespace boost::units;
 
@@ -57,10 +58,11 @@ class ConveyorBeltKfD44
         /**
          * Get information whether a connection is to the device is established or not.
          *
-         * @retval true a connection is established
-         * @retval false no connection
+         * @retval 0 no connection established
+         * @retval 1 a connection is established
+         * @retval -1 communication error
          */
-        bool is_connected();
+        int is_connected();
 
         /**
          * Start the belt movement with a given direction
@@ -75,19 +77,21 @@ class ConveyorBeltKfD44
         /**
          * Stop the belt movement.
          *
-         * @retval true the stop command has been written to the respective Modbus register
-         * @retval false the stop command could not be written to the respective Modbus register
+         * @retval 0 the stop command has been written to the respective Modbus register
+         * @retval -1 Modbus communication error
+         * @retval -2 the stop command could not be written to the respective Modbus register
          */
-        bool stop();
+        int stop();
 
         /**
          * Set the frequency of for frequency converter to change the velocity of the belt. The frequency can be changed in any state.
          *
          * @param desired_frequency	desired frequency in Hz (Minimum frequency = 2.0 Hz, maximum frequency = 75.0 Hz).
-         * @retval true the frequency was set successfully
-         * @retval false the frequency could not be set
+         * @retval 0 the frequency was set successfully
+         * @retval -1 ModBus communication error
+         * @retval -2 the frequency could not be set
          */
-        bool setFrequency(const quantity<si::frequency> desired_frequency);
+        int setFrequency(const quantity<si::frequency> desired_frequency);
 
         /**
          * Allows to enable and disable the Modbus debug messages.

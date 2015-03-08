@@ -70,3 +70,10 @@ add_executable(simple_function_test
 target_link_libraries(simple_function_test
   conveyor_belt_kf_d44
 )
+
+add_executable(stop_belt
+  apps/stop_belt.cpp
+)
+target_link_libraries(stop_belt
+  conveyor_belt_kf_d44
+)

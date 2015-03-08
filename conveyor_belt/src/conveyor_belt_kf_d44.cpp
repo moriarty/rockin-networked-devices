@@ -6,6 +6,7 @@
  */
 
 #include "conveyor_belt_kf_d44.h"
+#include <iostream>
 
 ConveyorBeltKfD44::ConveyorBeltKfD44() :
         modbus_rtu_contex_(NULL), run_state(STOPPED)
@@ -57,6 +58,10 @@ int ConveyorBeltKfD44::connect(const std::string device_name)
         return -4;
     }
 
+    //if (modbus_rtu_set_serial_mode(modbus_rtu_contex_, MODBUS_RTU_RS485) == -1)i{
+    //    std::cout << "485" << std::endl;
+    //    return -5;
+    //}
     setDefaultParameters();
 
     return 0;
@@ -77,21 +82,24 @@ void ConveyorBeltKfD44::disconnect()
     }
 }
 
-bool ConveyorBeltKfD44::is_connected()
+int ConveyorBeltKfD44::is_connected()
 {
-    if (modbus_rtu_contex_ == NULL)
-        return false;
+    if (modbus_rtu_contex_ == NULL) {
+	// connect() function hasn't been called
+        return 0;
+    }
 
     // check if status register can be read
-    uint16_t current_register_value[1];
-    if (modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, current_register_value) == 1)
-    {
-        usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
-        return true;
-    }
-    usleep((WAIT_TIME_READ_PARAMETERS_IN_MS * 1000));
+    uint16_t current_register_value[64];
+    int rc = modbus_read_registers(modbus_rtu_contex_, 0x0001, 1, current_register_value);
+    usleep(WAIT_TIME_READ_PARAMETERS_IN_MS * 1000);
 
-    return false;
+    if (rc >= 1) {
+        return 1;
+    } else if (rc == -1) {
+        return -1;
+    }
+    return 0;
 }
 
 int ConveyorBeltKfD44::start(Direction motor_direction)
@@ -104,50 +112,67 @@ int ConveyorBeltKfD44::start(Direction motor_direction)
     else if (motor_direction == REVERSE)
         register_value.set(1, 1);
     else
-        return -1;
+        // Unsupported motor_direction Error
+        return -2;
 
     // set run mode to start
     register_value.set(0, true);
 
     // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex_, 0x0001, (int) (register_value.to_ulong())) == 1)
-    {
-        usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+    
+    int foo = (int) register_value.to_ulong();
+    std::cout << modbus_rtu_contex_ << "!! " << std::endl; 
+    std::cout << "foo " << foo << std::endl;
+    int wc = modbus_write_register(modbus_rtu_contex_, 0x0001, foo);
+
+    usleep(WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000);
+
+    if (wc == -1){
+        // Communication Error
+        std::cout << "KfD44::start " << modbus_strerror(errno) << std::endl;
+        return -1;
+    } else if (wc > 0) {
         run_state = STARTED;
         return 0;
     }
-    usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
+    // Unexpected Error or no value read/written (wc == 0)
+    return -3;
 
+}
+
+int ConveyorBeltKfD44::stop()
+{
+    // write the values to the register
+    int wc = modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00);
+    usleep(WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000);
+
+    if (wc == -1){
+        // Communication Error: (-1)
+	    std::cout << "write failed (KfD44::Stop)" << modbus_strerror(errno) << std::endl;
+        return -1;
+    } else if (wc > 0) {
+        run_state = STOPPED;
+        return 0;
+    }
     return -2;
 }
 
-bool ConveyorBeltKfD44::stop()
-{
-    // write the values to the register
-    if (modbus_write_register(modbus_rtu_contex_, 0x0001, 0x00) == 1)
-    {
-        usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
-        run_state = STOPPED;
-        return true;
-    }
-    usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
-
-    return false;
-}
-
-bool ConveyorBeltKfD44::setFrequency(const quantity<si::frequency> desired_frequency)
+int ConveyorBeltKfD44::setFrequency(const quantity<si::frequency> desired_frequency)
 {
     int transformed_frequency = static_cast<int>((desired_frequency.value() * 100)) ;
 
     // write the frequency in to the respective register
-    if (modbus_write_register(modbus_rtu_contex_, 0x0002, transformed_frequency) == 1)
-    {
-        usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
-        return true;
+    int wc = modbus_write_register(modbus_rtu_contex_, 0x0002, transformed_frequency);
+    usleep(WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000);
+    
+    if (wc == -1) {
+        // Communication Error;
+        std::cout << "(kfD44::setFreq) "<< modbus_strerror(errno) << std::endl;
+        return -1;
+    } else if (wc > 0) {
+        return 0;
     }
-    usleep((WAIT_TIME_WRITE_PARAMETERS_IN_MS * 1000));
-
-    return false;
+    return -2;
 }
 
 void ConveyorBeltKfD44::setModbusDebugMode(bool debug_mode_on)
